@@ -36,7 +36,7 @@ function onClick(event: MouseEvent): void {
             </li>
         </ul>
         <p class="mt-4 pl-2 text-xs font-medium text-accent/80 group-hover:text-accent transition">
-            Browse {{ group.name }} scripts &rarr;
+            Open folder &rarr;
         </p>
     </a>
 </template>

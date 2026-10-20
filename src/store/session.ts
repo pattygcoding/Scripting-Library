@@ -309,8 +309,8 @@ export const heroLine = computed<string>(() => {
     const scriptCount = meta?.scriptCount || data.scripts().length;
     const languageCount = meta?.languageCount || data.languageGroups().length;
     const documented = meta?.documentedCount ?? data.scripts().filter((item) => item.docs).length;
-    return scriptCount + " scripts across " + languageCount + " languages \u00b7 " +
-        documented + " with documentation";
+    return scriptCount + " scripts \u00b7 " + languageCount + " languages \u00b7 " +
+        documented + " documented";
 });
 
 // ---- Links ----------------------------------------------------------------------

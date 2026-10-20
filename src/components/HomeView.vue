@@ -13,11 +13,11 @@ import ScriptCard from "./ScriptCard.vue";
         <div class="mx-auto w-full max-w-6xl px-3 sm:px-6 py-8 sm:py-12">
             <p class="micro text-fg-dim">Scripting Library</p>
             <h1 class="mt-2 text-3xl sm:text-4xl font-semibold tracking-tight text-fg-strong">
-                Six languages, <span class="text-accent">one library</span>.
+                Scripts in Bash, Lua, PowerShell, Python, Ruby and VBA
             </h1>
             <p class="mt-3 max-w-3xl text-sm sm:text-base leading-relaxed text-fg-soft">
-                Every script in the library, with its source and the documentation that sits
-                beside it. Pick a language to browse what it holds, or search the collection.
+                Every script here, with its source and its README. Search across all of them,
+                or open a language folder.
             </p>
             <p class="micro mt-4 text-accent/80">{{ heroLine }}</p>
 
@@ -35,7 +35,7 @@ import ScriptCard from "./ScriptCard.vue";
                     <h2 class="text-sm font-semibold text-fg-strong">
                         {{ searchResults.length }} matching script{{ searchResults.length === 1 ? "" : "s" }}
                     </h2>
-                    <span class="micro text-fg-dim">across every language</span>
+                    <span class="micro text-fg-dim">all languages</span>
                 </div>
                 <div class="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                     <ScriptCard v-for="item in searchResults" :key="item.id" :item="item" />
@@ -47,7 +47,7 @@ import ScriptCard from "./ScriptCard.vue";
             <template v-else>
                 <div class="mt-8 flex items-baseline justify-between gap-3">
                     <h2 class="text-sm font-semibold text-fg-strong">Languages</h2>
-                    <span class="micro text-fg-dim">choose one to browse</span>
+                    <span class="micro text-fg-dim">one folder each</span>
                 </div>
                 <div class="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     <LanguageCard v-for="group in languageCards" :key="group.slug" :group="group" />
