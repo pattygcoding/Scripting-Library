@@ -1,9 +1,9 @@
 // Generates public/scripts-data.js from the real repository: the dashboard is a
-// viewer for what is actually committed, so this walks the six language folders,
-// reads each script's source and the README that sits beside it, and writes one
-// payload the app can read without a fetch.  `npm run data` runs it, and the build
-// runs it again, so a script added to a folder appears on the site without an app
-// change.
+// viewer for what is actually committed, so this walks the six language folders
+// under `scripts/`, reads each script's source and the README that sits beside it,
+// and writes one payload the app can read without a fetch.  `npm run data` runs it,
+// and the build runs it again, so a script added to a folder appears on the site
+// without an app change.
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, extname, join } from "node:path";
@@ -11,6 +11,18 @@ import { fileURLToPath } from "node:url";
 
 // tools/ -> the repository root.
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
+
+// Every language folder lives under this one directory, so the repository root holds
+// the showcase and a single tree of scripts beside it.  A language's own `folder` is
+// just its name; every path the payload records is from the repository root, because
+// that is what the GitHub links are built from.
+const SCRIPTS_DIR = "scripts";
+
+// The repository-relative path of a language folder or one of the script folders
+// inside it: `scripts/powershell`, or `scripts/powershell/Update Git`.
+function scriptsPath(...parts) {
+    return [SCRIPTS_DIR, ...parts].join("/");
+}
 
 // The language folders, in the order the README lists them.  `primary` is the order
 // a folder's files are preferred in: the spreadsheet scripts ship a .vba, a .gs and
@@ -157,7 +169,7 @@ function firstSentence(readme) {
 // One script folder -> one item.  `docs` is absent for the folders that ship no
 // README, which is what hides the Documentation tab for them.
 function collectScripts(language) {
-    const languageDir = join(ROOT, language.folder);
+    const languageDir = join(ROOT, SCRIPTS_DIR, language.folder);
     if (!existsSync(languageDir)) {
         return [];
     }
@@ -192,8 +204,8 @@ function collectScripts(language) {
             language: language.name,
             languageSlug: language.slug,
             prism: language.prism,
-            file: language.folder + "/" + entry + "/" + primary,
-            folder: language.folder + "/" + entry,
+            file: scriptsPath(language.folder, entry, primary),
+            folder: scriptsPath(language.folder, entry),
             extension: extname(primary).toLowerCase(),
             ...(firstSentence(docs) ? { summary: firstSentence(docs) } : {}),
             ...(others.length > 0 ? { note: "Also in this folder: " + others.join(", ") + "." } : {}),
@@ -281,7 +293,7 @@ function main() {
         if (items.length === 0) {
             continue;
         }
-        const readmePath = join(ROOT, language.folder, "README.md");
+        const readmePath = join(ROOT, SCRIPTS_DIR, language.folder, "README.md");
         languages.push({
             name: language.name,
             slug: language.slug,
@@ -291,7 +303,7 @@ function main() {
             description: language.description,
             // The folder the language lives in, for its GitHub link, and the folder's
             // own README, which its page shows as the language's overview.
-            folder: language.folder,
+            folder: scriptsPath(language.folder),
             ...(existsSync(readmePath) ? { docs: readText(readmePath) } : {}),
             count: items.length,
         });

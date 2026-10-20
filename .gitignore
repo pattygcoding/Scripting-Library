@@ -1,11 +1,11 @@
 # ==========================================================================
 # Scripting Library - ignore rules
 #
-# Tracked in this repository: every script (bash/, lua/, powershell/, python/,
-# ruby/, vba/ - each folder holds one script plus its README.md), the Vue
-# showcase (src/, public/, configs), the generator (tools/) and the top-level
-# README.  Everything below is build output, generated data or tool/editor
-# cruft.
+# Tracked in this repository: every script (scripts/bash/, scripts/lua/,
+# scripts/powershell/, scripts/python/, scripts/ruby/, scripts/vba/ - each folder
+# holds one script plus its README.md), the Vue showcase (src/, public/, configs),
+# the generator (tools/) and the top-level README.  Everything below is build
+# output, generated data or tool/editor cruft.
 # ==========================================================================
 
 # --- Showcase app (Vue + Vite) -------------------------------------------
