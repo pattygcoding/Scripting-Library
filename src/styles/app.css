@@ -71,13 +71,15 @@ body {
     overflow: hidden;
 }
 
-/* The app mounts into `#app`, which is the layout's flex row.  Both the body height
-   above and this one have to be explicit: a percentage height inside an auto-height
-   box resolves to `auto`, so a `.h-full` on a child of an unstyled mount point would
-   let the sidebar grow to the full height of its list instead of scrolling, and the
-   page could not scroll either. */
+/* The app mounts into `#app`, which is the layout's flex column: the banner across
+   the top, then the screen the address names.  Both the body height above and this
+   one have to be explicit: a percentage height inside an auto-height box resolves to
+   `auto`, so a `.flex-1` child of an unstyled mount point could not scroll, and the
+   page could not either.  Keep the direction and the overflow here, not in the
+   markup, so the three stay together. */
 #app {
     display: flex;
+    flex-direction: column;
     width: 100%;
     height: 100%;
     overflow: hidden;
@@ -97,6 +99,15 @@ html[data-theme="light"] .theme-icon-sun { display: none; }
 }
 
 pre code { white-space: pre; }
+
+/* A card's summary is clamped to two lines: Tailwind's line-clamp plugin is not part
+   of this config, and a summary that runs long would make the grid ragged. */
+.clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
 
 /* A script's blue file-extension tag, e.g. ".sh" / ".ps1".  Declared outside .micro
    so it can opt out of the uppercase/wide tracking. */

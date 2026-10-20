@@ -25,48 +25,49 @@
     <noscript><p>This link needs JavaScript; open the showcase root instead.</p></noscript>
     <script>
         // GitHub Pages serves this file for any path it cannot find, *without* changing
-        // the address bar - which is what makes the dashboard's own links
-        // (/bash-clear-git, /python-count-files) work when they are opened directly.
-        // The request is rebuilt as the query-string shape index.html reads on load,
-        // and the page then writes the pretty path back into the bar with the History
-        // API.
+        // the address bar - which is what makes the dashboard's own links work when
+        // they are opened directly: /powershell, /powershell/update-git, and a
+        // tolerated /powershell/update-git/docs.
+        //
+        // The shim cannot tell which leading segments are the deployment prefix (a
+        // project site is served from a directory whose name looks like any other
+        // segment), so it does not try: the requested path travels in `?path=` and the
+        // dashboard strips its own prefix off it when it reads the route.
+        //
+        // `index.html` lives at the deployment root, so the way up is one directory per
+        // hop - each hop drops the current document's own name and one segment above
+        // it - and a hop counter stops a path that cannot resolve from looping.
         (function () {
-            var parts = window.location.pathname.replace(/\/+$/, "").split("/");
-            var last = parts.pop() || "";
-            // A trailing tab segment names the tab explicitly; the dashboard works
-            // out whether that script even has it and falls back to its code if not.
-            var tab = last === "docs" || last === "code" ? last : "";
-            if (tab) { last = parts.pop() || ""; }
-            // A script id is a bare slug (`<language>-<script>`).  Anything else - a
-            // missing .html, a directory - is junk, so drop one more level and keep
-            // climbing towards the deployment root instead of bouncing back here for
-            // ever.
-            // Slugs are lowercase, so a hand-typed /Bash-Clear-Git still lands.
-            var slug = /^[a-z0-9][a-z0-9_-]*$/i.test(last) ? last.toLowerCase() : "";
-            if (!slug) { parts.pop(); }
-            // Anything else the link carried has to survive the trip, so the dashboard
-            // can put the exact address back in the bar.
             var params = new URLSearchParams(window.location.search || "");
-            params.delete("script");
-            if (tab) { params.set("tab", tab); }
-            var target = parts.join("/") + "/index.html";
-            if (slug) { target += "?script=" + encodeURIComponent(slug); }
+            var requested = params.get("path") || (window.location.pathname + window.location.search);
+            ["path", "script", "lang", "tab"].forEach(function (key) { params.delete(key); });
             var query = params.toString();
-            if (query) { target += (slug ? "&" : "?") + query; }
-            document.getElementById("fallback").href = target;
-            // Same favicon as the dashboard.  It has to be built from the path we just
-            // climbed (a plain relative href would resolve against a deep junk path),
-            // so the icon shows while this page is on screen.
+
+            var segments = window.location.pathname.split("/").filter(Boolean);
+            if (segments.length > 0 && /^index\.html?$/i.test(segments[segments.length - 1])) {
+                segments.pop();
+            }
+            if (segments.length > 0) {
+                segments.pop();
+            }
+            var root = segments.length > 0 ? "/" + segments.join("/") + "/" : "/";
+            var target = root + "index.html?path=" + encodeURIComponent(requested) +
+                (query ? "&" + query : "");
+
+            // The no-JavaScript fallback: the deployment root this hop resolved.
+            document.getElementById("fallback").href = root;
+
+            // Same favicon as the dashboard, built from that root (a plain relative href
+            // would resolve against the deep junk path), so the icon shows meanwhile.
             var icon = document.createElement("link");
             icon.rel = "icon";
             icon.type = "image/png";
-            icon.href = parts.join("/") + "/logo.png";
+            icon.href = root + "logo.png";
             document.head.appendChild(icon);
-            // Hard stops, so a path that cannot resolve (a typo above the deployment
-            // root) shows the link rather than redirecting in circles: at most four
-            // hops, and never re-request the address we are already on.  The dashboard
-            // clears the counter as soon as it loads, so the next bad link is free to
-            // try again.
+
+            // Hard stops: at most four hops, and never re-request the address we are
+            // already on.  The dashboard clears the counter as soon as it loads, so the
+            // next bad link is free to try again.
             var hops = 0;
             try {
                 hops = Number(sessionStorage.getItem("sl-404") || "0") + 1;

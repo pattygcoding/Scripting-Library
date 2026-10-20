@@ -9,11 +9,11 @@ export const DATA: DashboardData | undefined = window.SCRIPTING_LIBRARY_DATA;
 // state (which says how to generate the data) instead of throwing.
 export const hasData: boolean = !!DATA && Array.isArray(DATA.scripts) && DATA.scripts.length > 0;
 
-// The script the showcase falls back to when the address names none (`/` and
-// `index.html` both land here).  "Clear Git" ships in all six languages, so it is
-// the clearest single demonstration of what the library is; a fork without it falls
-// back to the first script present.
-export const DEFAULT_SCRIPT_ID = "bash-clear-git";
+// The script the showcase falls back to when the address names a language but no
+// script (`/bash` alone): that language's first script.  "Clear Git" ships in all six
+// languages, so it leads the library's first folder; a fork without it falls back to
+// the first script present.
+export const DEFAULT_SCRIPT_ID = "bash/clear-git";
 
 // The last-resort repository, for the one place a link cannot read `meta`: a
 // checkout that has not generated the showcase data yet.  The generator writes the
@@ -28,7 +28,26 @@ export function languageGroups(): LanguageGroup[] {
     return DATA?.languages ?? [];
 }
 
-export function itemById(id: string | null): Item | undefined {
+export function languageBySlug(slug: string | null | undefined): LanguageGroup | undefined {
+    if (!slug) {
+        return undefined;
+    }
+    return languageGroups().find((group) => group.slug === slug);
+}
+
+export function knownLanguage(slug: string | null | undefined): boolean {
+    return !!languageBySlug(slug);
+}
+
+// The scripts in one language folder, in the order the generator listed them.
+export function scriptsForLanguage(slug: string | null | undefined): Item[] {
+    if (!slug) {
+        return [];
+    }
+    return scripts().filter((item) => item.languageSlug === slug);
+}
+
+export function itemById(id: string | null | undefined): Item | undefined {
     if (!id) {
         return undefined;
     }
@@ -36,12 +55,25 @@ export function itemById(id: string | null): Item | undefined {
 }
 
 export function knownScript(id: string | null | undefined): boolean {
-    return !!id && scripts().some((item) => item.id === id);
+    return !!itemById(id);
+}
+
+// The flat address an older link used (`bash-clear-git`) resolved to the script it
+// named, so addresses from before the `/language/script` scheme keep working.
+export function itemByLegacyId(flat: string | null | undefined): Item | undefined {
+    if (!flat) {
+        return undefined;
+    }
+    return scripts().find((item) => item.languageSlug + "-" + item.slug === flat);
+}
+
+// A language's first script, which is what `/bash` opens when it names no script.
+export function firstScriptIdForLanguage(slug: string | null | undefined): string | null {
+    return scriptsForLanguage(slug)[0]?.id ?? null;
 }
 
 export function defaultScriptId(): string | null {
-    const all = scripts();
-    return (all.find((script) => script.id === DEFAULT_SCRIPT_ID) ?? all[0])?.id ?? null;
+    return itemById(DEFAULT_SCRIPT_ID)?.id ?? scripts()[0]?.id ?? null;
 }
 
 // Whether a script can show a tab.  Every script has source; the documentation tab
@@ -68,16 +100,25 @@ export function repoFolder(item: Item): string {
 // `<repository>/tree/<branch>/<folder>`.  Folder names here are real script names
 // (`Clear Git`, `Update GIt`, `Compare Columns`), so every path segment is
 // URL-encoded - a raw `#` would otherwise be read as a fragment and break the link.
-export function repoUrlFor(item: Item): string {
+export function repoTreeUrl(folder: string): string {
     const repository = DATA?.meta?.repository;
-    if (!repository) {
+    if (!repository || !folder) {
         return "";
     }
-    const path = repoFolder(item).split("/").map(encodeURIComponent).join("/");
+    const path = folder.split("/").map(encodeURIComponent).join("/");
     return repository + "/tree/" + (DATA?.meta?.branch || "main") + "/" + path;
 }
 
-// The repository root itself, behind the sidebar's GitHub mark - the same generated
+export function repoUrlFor(item: Item): string {
+    return repoTreeUrl(repoFolder(item));
+}
+
+// A language's own folder on GitHub, behind its page's link.
+export function repoUrlForLanguage(group: LanguageGroup | undefined): string {
+    return repoTreeUrl(group?.folder ?? "");
+}
+
+// The repository root itself, behind the banner's GitHub mark - the same generated
 // `meta.repository` the per-folder links are built from, so a fork marks its own
 // project.
 export function repoHomeUrl(): string {

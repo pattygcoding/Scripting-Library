@@ -14,14 +14,71 @@ const ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 
 // The language folders, in the order the README lists them.  `primary` is the order
 // a folder's files are preferred in: the spreadsheet scripts ship a .vba, a .gs and
-// an experimental .ts, and the .vba is the one this library is named for.
+// an experimental .ts, and the .vba is the one this library is named for.  `slug` is
+// the folder's address segment (`/powershell`), `description` is the one line the
+// home page card shows, and `color` is a legible accent derived from the language's
+// own brand colour, used by that card on the navy canvas.
 const LANGUAGES = [
-    { folder: "bash", name: "Bash", extension: ".sh", prism: "language-bash", primary: [".sh"] },
-    { folder: "lua", name: "Lua", extension: ".lua", prism: "language-lua", primary: [".lua"] },
-    { folder: "powershell", name: "PowerShell", extension: ".ps1", prism: "language-powershell", primary: [".ps1"] },
-    { folder: "python", name: "Python", extension: ".py", prism: "language-python", primary: [".py"] },
-    { folder: "ruby", name: "Ruby", extension: ".rb", prism: "language-ruby", primary: [".rb"] },
-    { folder: "vba", name: "VBA", extension: ".vba", prism: "language-visual-basic", primary: [".vba", ".gs", ".ts"] },
+    {
+        folder: "bash",
+        name: "Bash",
+        slug: "bash",
+        extension: ".sh",
+        prism: "language-bash",
+        primary: [".sh"],
+        color: "#4EAA25",
+        description: "Shell scripts for development, git and system utilities.",
+    },
+    {
+        folder: "lua",
+        name: "Lua",
+        slug: "lua",
+        extension: ".lua",
+        prism: "language-lua",
+        primary: [".lua"],
+        color: "#6C7CFF",
+        description: "Standalone Lua utilities, from file surveying to git.",
+    },
+    {
+        folder: "powershell",
+        name: "PowerShell",
+        slug: "powershell",
+        extension: ".ps1",
+        prism: "language-powershell",
+        primary: [".ps1"],
+        color: "#5391FE",
+        description: "Windows terminal and $profile helper functions.",
+    },
+    {
+        folder: "python",
+        name: "Python",
+        slug: "python",
+        extension: ".py",
+        prism: "language-python",
+        primary: [".py"],
+        color: "#4A9EE8",
+        description: "General purpose Python utilities.",
+    },
+    {
+        folder: "ruby",
+        name: "Ruby",
+        slug: "ruby",
+        extension: ".rb",
+        prism: "language-ruby",
+        primary: [".rb"],
+        color: "#E0503F",
+        description: "Ruby equivalents of the common utilities.",
+    },
+    {
+        folder: "vba",
+        name: "VBA",
+        slug: "vba",
+        extension: ".vba",
+        prism: "language-visual-basic",
+        primary: [".vba", ".gs", ".ts"],
+        color: "#21A366",
+        description: "VBA, Google Apps Script and Office Script for Excel and Sheets.",
+    },
 ];
 
 const DEFAULT_REPOSITORY = "https://github.com/pattygcoding/Scripting-Library";
@@ -53,6 +110,50 @@ function pickPrimary(sources, preferred) {
     return sources[0];
 }
 
+// The first sentence of a README, for the card the language page draws: the READMEs
+// open with a title, then a line or two saying what the script does, then their
+// sections.  Markdown decoration is stripped so the result reads as prose wherever
+// it is placed.
+function firstSentence(readme) {
+    if (!readme) {
+        return "";
+    }
+    const paragraph = [];
+    for (const line of readme.split("\n")) {
+        const text = line.trim();
+        if (text === "") {
+            if (paragraph.length > 0) {
+                break;
+            }
+            continue;
+        }
+        // Anything that is not prose - a heading, a fence, a list item, a table row,
+        // a raw HTML tag - ends the summary paragraph, or is skipped before it starts.
+        if (/^(#|```|>|\||[-*+]\s|\d+[.)]\s|<)/.test(text)) {
+            if (paragraph.length > 0) {
+                break;
+            }
+            continue;
+        }
+        paragraph.push(text);
+    }
+    let prose = paragraph
+        .join(" ")
+        .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
+        .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+        .replace(/`([^`]*)`/g, "$1")
+        .replace(/\*\*([^*]+)\*\*/g, "$1")
+        .replace(/\s+/g, " ")
+        .trim();
+    const stop = prose.search(/[.!?](\s|$)/);
+    if (stop > 0 && stop < 200) {
+        prose = prose.slice(0, stop + 1);
+    } else if (prose.length > 160) {
+        prose = prose.slice(0, 157).replace(/\s+\S*$/, "") + "...";
+    }
+    return prose;
+}
+
 // One script folder -> one item.  `docs` is absent for the folders that ship no
 // README, which is what hides the Documentation tab for them.
 function collectScripts(language) {
@@ -80,16 +181,23 @@ function collectScripts(language) {
         const primary = pickPrimary(sources, language.primary);
         const others = sources.filter((file) => file !== primary);
         const readme = files.find((file) => file.toLowerCase() === "readme.md");
+        const docs = readme ? readText(join(scriptDir, readme)) : "";
         items.push({
-            id: language.folder + "-" + slug(entry),
+            // The address is the language segment plus the script segment:
+            // /powershell/update-git.  Keeping the `/` in the id means the router, the
+            // links and `itemById` all speak one identifier.
+            id: language.slug + "/" + slug(entry),
+            slug: slug(entry),
             name: entry,
             language: language.name,
+            languageSlug: language.slug,
             prism: language.prism,
             file: language.folder + "/" + entry + "/" + primary,
             folder: language.folder + "/" + entry,
             extension: extname(primary).toLowerCase(),
+            ...(firstSentence(docs) ? { summary: firstSentence(docs) } : {}),
             ...(others.length > 0 ? { note: "Also in this folder: " + others.join(", ") + "." } : {}),
-            ...(readme ? { docs: readText(join(scriptDir, readme)) } : {}),
+            ...(docs ? { docs } : {}),
             code: readText(join(scriptDir, primary)),
         });
     }
@@ -173,10 +281,18 @@ function main() {
         if (items.length === 0) {
             continue;
         }
+        const readmePath = join(ROOT, language.folder, "README.md");
         languages.push({
             name: language.name,
+            slug: language.slug,
             extension: language.extension,
             prism: language.prism,
+            color: language.color,
+            description: language.description,
+            // The folder the language lives in, for its GitHub link, and the folder's
+            // own README, which its page shows as the language's overview.
+            folder: language.folder,
+            ...(existsSync(readmePath) ? { docs: readText(readmePath) } : {}),
             count: items.length,
         });
         scripts.push(...items);

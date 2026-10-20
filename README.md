@@ -40,16 +40,30 @@ Scripting-Library/
 ## Showcase site
 
 [scripts.pattygcoding.com](https://scripts.pattygcoding.com) is a Vue 3 + TypeScript + Vite dashboard
-that reads this repository and displays it: a searchable, filterable list of every script, with the
-source and the folder's `README.md` side by side. It lives at the repository root, beside the script
+that reads this repository and displays it. It lives at the repository root, beside the script
 folders it describes.
 
+Three screens, each with its own address:
+
+| Address | Screen |
+| --- | --- |
+| `/` | **Home** - the six language folders as cards, with a search across every script |
+| `/powershell` | **One language** - that folder's scripts as cards, plus the folder's own `README.md` |
+| `/powershell/update-git` | **One script** - its source and its folder's `README.md`, as tabs |
+
+A banner across the top carries the way home, the six language types and a link to this repository,
+so the same navigation is one tap away from every screen. `?tab=docs` (or a trailing `/docs`) opens
+a script on its documentation, and the flat addresses of the first version (`/bash-clear-git`) still
+resolve.
+
 - `tools/generate-data.mjs` walks the six folders and writes `public/scripts-data.js`, so a script
-  added to a folder appears on the site with no app change.
+  added to a folder appears on the site with no app change. Each script carries a `<language>/<script>`
+  address, the first sentence of its README (what a card shows) and that README itself.
 - `npm run data` regenerates that payload, `npm run dev` serves the dashboard, and `npm run build`
   runs the generator, `vue-tsc` and Vite.
 - Every push to `main` rebuilds and republishes the site to GitHub Pages
-  (`.github/workflows/deploy.yml`).
+  (`.github/workflows/deploy.yml`). `public/404.html` is the shim that makes a deep link such as
+  `/powershell/update-git` work when it is opened or refreshed directly.
 
 ## Bash
 
