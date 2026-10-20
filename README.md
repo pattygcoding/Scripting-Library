@@ -17,7 +17,7 @@ A single home for all of my scripting libraries.
 - [PowerShell](#powershell) - [powershell/](powershell) - [README](powershell/README.md)
 - [Python](#python) - [python/](python) - [README](python/README.md)
 - [Ruby](#ruby) - [ruby/](ruby) - [README](ruby/README.md)
-- [Spreadsheets](#spreadsheets) - [spreadsheets/](spreadsheets) - [README](spreadsheets/README.md)
+- [VBA](#vba) - [vba/](vba) - [README](vba/README.md)
 
 ## Layout
 
@@ -31,7 +31,7 @@ Scripting-Library/
 ├── powershell/      # Windows terminal and `$profile` helper functions
 ├── python/          # General purpose Python utilities
 ├── ruby/            # Ruby equivalents of the common utilities
-└── spreadsheets/    # Google Apps Script, Office Script, and VBA
+└── vba/             # VBA, Google Apps Script, and Office Script
 ```
 
 ## Bash
@@ -173,17 +173,18 @@ Ruby equivalents of the common utilities. See the [full documentation](ruby/READ
 | [Undo Commit](ruby/Undo%20Commit) | Undo the last commit using a hard, mixed, or soft reset |
 | [Update Git](ruby/Update%20Git) | Fetch and merge the latest changes |
 
-## Spreadsheets
+## VBA
 
-Scripts I use on Google Sheets and in Excel to compare SQL output when Microsoft SQL Server can't
-do it for me. See the [full documentation](spreadsheets/README.md) for install steps in both apps.
+Scripts I use in Excel and on Google Sheets to compare SQL output when Microsoft SQL Server can't
+do it for me. Each script ships in all three formats: VBA (`.vba`), Google Apps Script (`.gs`), and
+Office Script (`.ts`). See the [full documentation](vba/README.md) for install steps in both apps.
 
 | Script | Description |
 | --- | --- |
-| [Compare Columns](spreadsheets/Compare%20Columns) | Compare two columns and return the differences |
-| [Compare Rows](spreadsheets/Compare%20Rows) | Compare two rows and return the differences |
-| [Delete Duplicate Rows](spreadsheets/Delete%20Duplicate%20Rows) | Delete duplicate rows from a sheet |
-| [Obtain SQL](spreadsheets/Obtain%20SQL) | Build the SQL format for a header and value row |
+| [Compare Columns](vba/Compare%20Columns) | Compare two columns and return the differences |
+| [Compare Rows](vba/Compare%20Rows) | Compare two rows and return the differences |
+| [Delete Duplicate Rows](vba/Delete%20Duplicate%20Rows) | Delete duplicate rows from a sheet |
+| [Obtain SQL](vba/Obtain%20SQL) | Build the SQL format for a header and value row |
 
 ## Usage
 
@@ -210,7 +211,7 @@ python "Scripting-Library/python/Count Words/count_words.py"
 ruby   "Scripting-Library/ruby/Clear Git/clear-git.rb"
 ```
 
-For the spreadsheets, open the sheet, then either go to **Extensions -> Apps Script** in Google Sheets
+For the `vba/` scripts, open the sheet, then either go to **Extensions -> Apps Script** in Google Sheets
 or press **Alt + F11** in Excel and paste in the `.gs` / `.vba` file.
 
 ## Notes
@@ -224,4 +225,4 @@ Each language folder was consolidated from its own repository, which is kept int
 | `powershell/` | [pattygcoding/Powershell-Scripts](https://github.com/pattygcoding/Powershell-Scripts) |
 | `python/` | [pattygcoding/Python-Scripts](https://github.com/pattygcoding/Python-Scripts) |
 | `ruby/` | [pattygcoding/Ruby-Scripts](https://github.com/pattygcoding/Ruby-Scripts) |
-| `spreadsheets/` | [pattygcoding/Spreadsheet-Scripts](https://github.com/pattygcoding/Spreadsheet-Scripts) |
+| `vba/` | [pattygcoding/Spreadsheet-Scripts](https://github.com/pattygcoding/Spreadsheet-Scripts) |
