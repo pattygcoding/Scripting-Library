@@ -51,10 +51,11 @@ Three screens, each with its own address:
 | `/powershell` | **One language** - that folder's scripts as cards, plus the folder's own `README.md` |
 | `/powershell/update-git` | **One script** - its source and its folder's `README.md`, as tabs |
 
-A banner across the top carries the way home, the six language types and a link to this repository,
-so the same navigation is one tap away from every screen. `?tab=docs` (or a trailing `/docs`) opens
-a script on its documentation, and the flat addresses of the first version (`/bash-clear-git`) still
-resolve.
+A banner across the top carries the home mark back to [pattygcoding.com](https://pattygcoding.com)
+(the same corner mark the Turing Machines and Connect Four showcases use), the site's own home, the
+six language types and a link to this repository, so the same navigation is one tap away from every
+screen. `?tab=docs` (or a trailing `/docs`) opens a script on its documentation, and the flat
+addresses of the first version (`/bash-clear-git`) still resolve.
 
 - `tools/generate-data.mjs` walks the six folders and writes `public/scripts-data.js`, so a script
   added to a folder appears on the site with no app change. Each script carries a `<language>/<script>`

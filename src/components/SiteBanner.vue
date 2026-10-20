@@ -3,10 +3,10 @@ import { computed } from "vue";
 import { goHome, homeUrl, intercept, languageCards, languageUrl, openLanguage, repoHomeUrl, state } from "../store/session";
 import { toggleTheme } from "../store/theme";
 
-// The banner across the top of every screen: the way home, the six language types as
-// links, and the repository on GitHub.  It replaces the sidebar the first version had,
-// so the same navigation is one tap away from the home page, a language page and a
-// script page alike.
+// The banner across the top of every screen: the home mark back to pattygcoding.com,
+// the way home inside the site, the six language types as links, and the repository
+// on GitHub.  It replaces the sidebar the first version had, so the same navigation
+// is one tap away from the home page, a language page and a script page alike.
 //
 // Every entry is a real <a href> built from the same address helpers the cards use, so
 // it can be copied, bookmarked or opened in a new tab; a plain left click moves the
@@ -25,13 +25,21 @@ function goLanguage(event: MouseEvent, slug: string): void {
 <template>
     <header class="shrink-0 bg-ink-900/90 backdrop-blur border-b border-line/5">
         <div class="px-3 sm:px-5 py-2.5 flex items-center gap-3">
-            <!-- The brand is the way home from anywhere. -->
+            <!-- The home mark on the left: the same house icon, pointed at the same
+                 place, as the Turing Machines and Connect Four showcases carry, so
+                 every pattygcoding.com project returns to the portfolio from the
+                 same corner.  It opens the main site in a new tab, because leaving
+                 this dashboard is not what the visitor came for. -->
+            <a href="https://pattygcoding.com" target="_blank" rel="noopener" title="pattygcoding.com"
+               aria-label="Back to pattygcoding.com"
+               class="flex items-center justify-center w-8 h-8 shrink-0 rounded-md bg-ink-950 border border-line/10 text-fg-muted hover:text-accent hover:border-accent/40 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
+            </a>
+
+            <!-- The brand is the way home from anywhere in this site. -->
             <a :href="homeUrl()" @click="goHomeClick" title="Scripting Library - home"
-               :class="['flex items-center gap-2 shrink-0 rounded-md px-2 py-1.5 transition',
+               :class="['flex items-center shrink-0 rounded-md px-2 py-1.5 transition',
                         homeActive ? 'text-accent' : 'text-fg-soft hover:text-accent']">
-                <span class="flex" aria-hidden="true">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
-                </span>
                 <span class="text-sm font-semibold tracking-tight whitespace-nowrap">Scripting <span class="text-accent">Library</span></span>
             </a>
 
