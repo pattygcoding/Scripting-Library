@@ -2,6 +2,9 @@
 
 A single home for all of my scripting libraries.
 
+**Live:** [scripts.pattygcoding.com](https://scripts.pattygcoding.com) - a Vue dashboard that browses
+every script, its source and its README.
+
 [![Bash](https://img.shields.io/badge/Bash-4EAA25?style=for-the-badge&logo=gnubash&logoColor=white)](https://www.gnu.org/software/bash/)
 [![Lua](https://img.shields.io/badge/Lua-2C2D72?style=for-the-badge&logo=lua&logoColor=white)](https://www.lua.org/)
 [![PowerShell](https://img.shields.io/badge/PowerShell-5391FE?style=for-the-badge&logo=powershell&logoColor=white)](https://docs.microsoft.com/en-us/powershell/)
@@ -33,6 +36,20 @@ Scripting-Library/
 ├── ruby/            # Ruby equivalents of the common utilities
 └── vba/             # VBA, Google Apps Script, and Office Script
 ```
+
+## Showcase site
+
+[scripts.pattygcoding.com](https://scripts.pattygcoding.com) is a Vue 3 + TypeScript + Vite dashboard
+that reads this repository and displays it: a searchable, filterable list of every script, with the
+source and the folder's `README.md` side by side. It lives at the repository root, beside the script
+folders it describes.
+
+- `tools/generate-data.mjs` walks the six folders and writes `public/scripts-data.js`, so a script
+  added to a folder appears on the site with no app change.
+- `npm run data` regenerates that payload, `npm run dev` serves the dashboard, and `npm run build`
+  runs the generator, `vue-tsc` and Vite.
+- Every push to `main` rebuilds and republishes the site to GitHub Pages
+  (`.github/workflows/deploy.yml`).
 
 ## Bash
 
