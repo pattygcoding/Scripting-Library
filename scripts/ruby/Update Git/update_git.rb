@@ -1,48 +1,50 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Fetches and merges the latest changes into the current Git branch.
+
 require 'optparse'
 require 'open3'
 
-def run_command(command)
-  stdout, stderr, status = Open3.capture3(command)
-  unless status.success?
-    puts "Error: #{stderr}"
-    exit status.exitstatus
-  end
-  stdout
+YELLOW = "\e[93m"
+GREEN = "\e[92m"
+RESET = "\e[0m"
+
+DEFAULT_BRANCH = 'master'
+
+def main
+  options = parse_options
+  target = options[:branch] || DEFAULT_BRANCH
+  merge_branch = "origin/#{target}"
+
+  puts "#{YELLOW}update-git: Fetching...#{RESET}"
+  run_command('git', 'fetch')
+
+  message = "Auto-merge update: Merged #{target} to branch using update-git Ruby script (git fetch; git merge #{merge_branch}; git push;)"
+  puts "#{YELLOW}update-git: Merging #{merge_branch} into the current branch...#{RESET}"
+  run_command('git', 'merge', merge_branch, '-m', message)
+
+  puts "#{YELLOW}update-git: Pushing changes...#{RESET}"
+  run_command('git', 'push')
+
+  puts "#{GREEN}update-git: Auto-merge complete. Your branch is now up to date with #{target}.#{RESET}"
 end
 
-def update_git(branch = nil)
-  puts "\e[93mupdate-git: Fetching...\e[0m"
-  run_command("git fetch")
+def run_command(*command)
+  _stdout, stderr, status = Open3.capture3(*command)
+  return if status.success?
 
-  if branch
-    merge_branch = "origin/#{branch}"
-    message = "Auto-merge update: Merged #{branch} to branch using update-git Ruby script (git fetch; git merge #{merge_branch}; git push;)"
-    puts "\e[93mupdate-git: Merging #{merge_branch} into the current branch...\e[0m"
-  else
-    merge_branch = "origin/master"
-    message = "Auto-merge update: Merged master to branch using update-git Ruby script (git fetch; git merge #{merge_branch}; git push;)"
-    puts "\e[93mupdate-git: Merging #{merge_branch} into the current branch...\e[0m"
-  end
-
-  run_command("git merge #{merge_branch} -m \"#{message}\"")
-
-  puts "\e[93mupdate-git: Pushing changes...\e[0m"
-  run_command("git push")
-
-  if branch
-    puts "\e[92mupdate-git: Auto-merge complete. Your branch is now up to date with #{branch}.\e[0m"
-  else
-    puts "\e[92mupdate-git: Auto-merge complete. Your branch is now up to date with master.\e[0m"
-  end
+  warn "Error: #{stderr.strip}"
+  exit status.exitstatus
 end
 
-options = {}
-OptionParser.new do |opts|
-  opts.banner = "Usage: update_git.rb [options]"
+def parse_options
+  options = {}
+  OptionParser.new do |opts|
+    opts.banner = 'Usage: update_git.rb [--branch BRANCH]'
+    opts.on('-b', '--branch BRANCH', 'The branch to merge into the current branch (default: master)') { |b| options[:branch] = b }
+  end.parse!
+  options
+end
 
-  opts.on("-b", "--branch BRANCH", "The branch to merge into the current branch") do |b|
-    options[:branch] = b
-  end
-end.parse!
-
-update_git(options[:branch])
+main if __FILE__ == $PROGRAM_NAME

@@ -1,17 +1,32 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Converts a JSON file (an array of objects) into a CSV file.
+
 require 'json'
 require 'csv'
 
-def json_to_csv(json_file, csv_file)
-  data = JSON.parse(File.read(json_file))
-  
-  CSV.open(csv_file, 'w') do |csv|
-    csv << data[0].keys
-    data.each do |row|
-      csv << row.values
-    end
+def main
+  json_file = ARGV[0] || 'data.json'
+  csv_file = ARGV[1] || 'data.csv'
+
+  begin
+    data = JSON.parse(File.read(json_file))
+  rescue SystemCallError, JSON::ParserError => e
+    warn "Error: #{e.message}"
+    exit 1
   end
+
+  if data.empty?
+    warn 'Error: the JSON file contains no rows.'
+    exit 1
+  end
+
+  CSV.open(csv_file, 'w') do |csv|
+    csv << data.first.keys
+    data.each { |row| csv << row.values }
+  end
+  puts "Wrote #{csv_file}"
 end
 
-json_file_path = 'data.json'
-csv_file_path = 'data.csv'
-json_to_csv(json_file_path, csv_file_path)
+main if __FILE__ == $PROGRAM_NAME

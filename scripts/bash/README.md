@@ -8,9 +8,15 @@ A collection of useful Bash scripts for development, git operations, and system 
 - [Angular Start](#angular-start) - Start Angular development server and open browser
 - [Cache Visual Studio Index](#cache-visual-studio-index) - Index .cs files for faster Visual Studio file searching
 - [Dotnet Analysis](#dotnet-analysis) - Analyze .NET application logs and extract executed commands
+- [Neovim](#neovim) - Find a file by name and open it in Neovim
 - [React Start](#react-start) - Start React development server and open browser
+- [Regvim](#regvim) - Find a file by name and open it in Vim
+- [Stack Trace](#stack-trace) - Extract file paths from a .NET stack trace
+- [Start Mod](#start-mod) - Build and launch a Minecraft mod client
 - [Svelte Start](#svelte-start) - Start Svelte development server and open browser
+- [Unit Tests](#unit-tests) - Clean, build, and test a .NET project
 - [Vs](#vs) - Open files in Visual Studio using cached index for fast file discovery
+- [Vsc](#vsc) - Find a file by name and open it in VS Code
 - [Vue Start](#vue-start) - Start Vue development server and open browser
 
 ### Git Utilities
@@ -25,11 +31,21 @@ A collection of useful Bash scripts for development, git operations, and system 
 - [Update Git All](#update-git-all) - Update all local branches with latest changes
 
 ### System Tools
+- [Clear Downloads](#clear-downloads) - Clear the Downloads folder
 - [Compare Diff](#compare-diff) - Compare two files with colorized diff output
+- [Connect Four](#connect-four) - Play Connect Four in the console
+- [Count Files](#count-files) - Count files in the current directory and subdirectories
 - [Create File](#create-file) - Create a new empty file with automatic .txt extension
+- [Gensql Col](#gensql-col) - Generate SQL to find a column by name
+- [Gensql Count](#gensql-count) - Generate SQL to count a table's rows
+- [Goto](#goto) - Jump to a frequently used directory
 - [India Time](#india-time) - Convert time to India timezone or show current India time
+- [Ip](#ip) - Return your IP address
 - [Nginx](#nginx) - Start or reload nginx server
+- [Print](#print) - Print text with optional ANSI color
+- [Random Password](#random-password) - Generate a random password
 - [Safe Unzip](#safe-unzip) - Safely extract zip files with security checks and limits
+- [Search Match](#search-match) - Search a directory tree for one or more terms
 - [Time](#time) - Time the execution of any command
 
 ## Script Documentation
@@ -91,6 +107,32 @@ Index updated: +25 / -3 / *5
 
 ---
 
+### Clear Downloads
+
+Delete everything inside your Downloads folder.
+
+**Dependencies:**
+- `find` command
+
+**Parameters:**
+- `$1` - Folder to clear (optional, defaults to ~/Downloads)
+
+**Usage:**
+```bash
+clear-downloads [directory]
+```
+
+**Example:**
+```bash
+clear-downloads
+# Output: Deleting all contents in /home/user/Downloads...
+# Output: Downloads folder cleared permanently.
+```
+
+**Warning:** This permanently deletes every file and folder inside the target directory.
+
+---
+
 ### Clear Git
 
 Delete local git branches that don't have corresponding origin remotes (orphaned branches).
@@ -142,6 +184,55 @@ compare-diff app.log app2.log
 
 # Compare files ignoring timestamps
 compare-diff log1.txt log2.txt --notime
+```
+
+---
+
+### Connect Four
+
+Play a two-player game of Connect Four in the console, with color-coded pieces and win detection.
+
+**Parameters:**
+- `$1` - First player name (optional, defaults to "Player 1")
+- `$2` - Second player name (optional, defaults to "Player 2")
+
+**Usage:**
+```bash
+connect-four [player-one] [player-two]
+```
+
+**Example:**
+```bash
+connect-four Bob Ryan
+# Player 1, choose a column (1-7):
+# ...
+# Bob wins!
+```
+
+---
+
+### Count Files
+
+Count the number of files in the current directory and its subdirectories, grouped by extension.
+
+**Dependencies:**
+- `find` command
+
+**Parameters:**
+- `--includenode` - Include files in node_modules directories
+
+**Usage:**
+```bash
+count-files [--includenode]
+```
+
+**Example:**
+```bash
+count-files
+# Output: Total number of files: 42
+# Output: Files by extension:
+# Output: .sh: 41
+# Output: .md: 1
 ```
 
 ---
@@ -238,6 +329,67 @@ dotnet-analysis application.log
 
 ---
 
+### Gensql Col
+
+Generate a SQL script you can use to search for every occurrence of a column name in a database.
+
+**Parameters:**
+- `$1` - Column name (or fragment) to search for (required)
+
+**Usage:**
+```bash
+gensql-col <column>
+```
+
+**Example:**
+```bash
+gensql-col NewId
+```
+
+---
+
+### Gensql Count
+
+Generate a SQL script you can use to count the number of entries in a given table.
+
+**Parameters:**
+- `$1` - Table name (optionally schema-qualified) (required)
+
+**Usage:**
+```bash
+gensql-count <table>
+```
+
+**Example:**
+```bash
+gensql-count "[db].[Table]"
+```
+
+---
+
+### Goto
+
+Jump to a frequently used directory, configured in the function's `destinations` map.
+
+**Parameters:**
+- `$1` - Destination key to navigate to
+
+**Usage:**
+```bash
+goto <destination>
+```
+
+**Setup:**
+Edit the `destinations` associative array in `goto.sh` and add your own paths.
+
+**Example:**
+```bash
+goto repos
+# Output: Navigated to /home/user/repos
+```
+
+---
+
 ### India Time
 
 Convert local time to India timezone (IST) or display current India time.
@@ -262,6 +414,49 @@ india-time
 # Convert specific time to India time
 india-time "9:00 AM"
 # Output: Inputted time in India: 02:30 PM
+```
+
+---
+
+### Ip
+
+Print the machine's IPv4 addresses.
+
+**Dependencies:**
+- `ipconfig.exe` (Windows), or `ip` / `ifconfig` (Unix)
+
+**Usage:**
+```bash
+ip
+```
+
+**Example:**
+```bash
+ip
+# Output: 192.168.1.42
+```
+
+---
+
+### Neovim
+
+Search for files by name in the current directory and its subdirectories, then open each match in Neovim.
+
+**Dependencies:**
+- Neovim (`nvim`)
+- `find` command
+
+**Parameters:**
+- `$1` - File name to search for (required)
+
+**Usage:**
+```bash
+neovim <file-name>
+```
+
+**Example:**
+```bash
+neovim Program.cs
 ```
 
 ---
@@ -309,6 +504,49 @@ nginx
 ```
 
 **Note:** This script requires configuration of the `nginx_base` variable to point to your nginx installation directory.
+
+---
+
+### Print
+
+Print text with optional ANSI color.
+
+**Parameters:**
+- `$1...` - Text to print
+- `--color <name>` - Foreground color (black, red, green, yellow, blue, magenta, cyan, white)
+- `--no-newline` - Do not print a trailing newline
+
+**Usage:**
+```bash
+print <text> [--color name] [--no-newline]
+```
+
+**Example:**
+```bash
+print "Hello World" --color red
+```
+
+---
+
+### Random Password
+
+Generate a random password using a mix of letters, digits, and symbols.
+
+**Dependencies:**
+- `tr` and `/dev/urandom`
+
+**Parameters:**
+- `$1` - Password length (optional, defaults to 12)
+
+**Usage:**
+```bash
+random-password [length]
+```
+
+**Example:**
+```bash
+random-password 24
+```
 
 ---
 
@@ -394,6 +632,29 @@ rebase-git-all
 
 ---
 
+### Regvim
+
+Search for files by name in the current directory and its subdirectories, then open each match in Vim.
+
+**Dependencies:**
+- Vim (`vim`)
+- `find` command
+
+**Parameters:**
+- `$1` - File name to search for (required)
+
+**Usage:**
+```bash
+regvim <file-name>
+```
+
+**Example:**
+```bash
+regvim Program.cs
+```
+
+---
+
 ### Reset Git
 
 Hard reset the current branch to match the origin/main state and force push.
@@ -456,6 +717,72 @@ safe-unzip malicious.zip
 
 ---
 
+### Search Match
+
+Search files of a given extension for one or more terms, printing each matching line with its line number.
+
+**Dependencies:**
+- `find` command
+
+**Parameters:**
+- `$1` - File extension to search (e.g. .cs)
+- `$2...` - One or more terms to search for
+- `--uncapped` - List more than the limit of 3000 results
+- `--cross` - Only report files that contain all of the specified terms
+- `--dir` - Display full file paths, not just file names
+- `--calls` - Only match when a period precedes the term
+
+**Usage:**
+```bash
+search-match <extension> <term> [term...] [options]
+```
+
+**Example:**
+```bash
+search-match .cs SearchTerm1 SearchTerm2 --cross --dir
+```
+
+---
+
+### Stack Trace
+
+Parse a stack trace file and print the relative file path from each frame, filtering out Microsoft framework calls for cleaner debugging output.
+
+**Parameters:**
+- `$1` - Stack trace file (optional, defaults to test.txt)
+
+**Usage:**
+```bash
+stack-trace [file]
+```
+
+**Example:**
+```bash
+stack-trace error.txt
+# Output: src/File.cs:line 10
+```
+
+---
+
+### Start Mod
+
+Build and launch a Minecraft mod client via the Gradle wrapper (`gradlew clean build` then `gradlew runClient`). Run it from the mod project directory.
+
+**Parameters:**
+- `--skip-build` - Skip `gradlew clean build` and only run the client
+
+**Usage:**
+```bash
+start-mod [--skip-build]
+```
+
+**Example:**
+```bash
+start-mod
+```
+
+---
+
 ### Svelte Start
 
 Start a Svelte development server using Windows Terminal or PowerShell and open in browser.
@@ -488,27 +815,29 @@ svelte-start
 
 Measure and display the execution time of any command.
 
+**Note:** The function is named `timer` (not `time`) because `time` is a reserved word in bash.
+
 **Dependencies:**
 - `date` command with nanosecond precision
-- `bc` calculator for floating-point arithmetic
+- `bc` calculator for floating-point arithmetic (falls back to `awk` when absent)
 
 **Parameters:**
 - `$@` - Command and arguments to time (required)
 
 **Usage:**
 ```bash
-time command [args...]
+timer command [args...]
 ```
 
 **Examples:**
 ```bash
 # Time a simple command
-time ls -la
+timer ls -la
 # Output: [command output]
 # Output: The task took 0.023456 seconds to complete.
 
 # Time a complex operation
-time find /usr -name "*.txt" | wc -l
+timer find /usr -name "*.txt" | wc -l
 # Output: 1247
 # Output: The task took 2.345678 seconds to complete.
 ```
@@ -544,6 +873,28 @@ undo-commit soft
 # Undo commit keeping changes unstaged
 undo-commit mixed
 # Output: undo-commit: Undoing the last commit with --mixed...
+```
+
+---
+
+### Unit Tests
+
+Clean, build and test a .NET unit test project with `dotnet clean`, `dotnet build`, and `dotnet test`.
+
+**Dependencies:**
+- .NET SDK (`dotnet`)
+
+**Parameters:**
+- `$1` - Path to the .csproj to test (required)
+
+**Usage:**
+```bash
+unit-tests <path-to.csproj>
+```
+
+**Example:**
+```bash
+unit-tests MyProject.Tests.csproj
 ```
 
 ---
@@ -633,6 +984,29 @@ vs AuthService.cs
 
 # Search for file with custom index
 vs Product /custom/path/index.txt
+```
+
+---
+
+### Vsc
+
+Search for a file by name in the current directory and its subdirectories, then open it in Visual Studio Code.
+
+**Dependencies:**
+- VS Code (`code`)
+- `find` command
+
+**Parameters:**
+- `$1` - File name to search for (required)
+
+**Usage:**
+```bash
+vsc <file-name>
+```
+
+**Example:**
+```bash
+vsc Program.js
 ```
 
 ---

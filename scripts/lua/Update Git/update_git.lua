@@ -1,54 +1,71 @@
-local argparse = require("argparse")
-local os = require("os")
+-- Fetches and merges the latest changes into the current Git branch.
 
--- Function to run a shell command and capture its output
-local function run_command(command)
-    local handle = io.popen(command)
-    local result = handle:read("*a")
-    local success, exit_code, exit_type = handle:close()
+local YELLOW = "\27[93m"
+local GREEN = "\27[92m"
+local RESET = "\27[0m"
 
-    if not success then
-        io.stderr:write(string.format("Error: %s\n", result))
-        os.exit(exit_code)
-    end
+local DEFAULT_BRANCH = "master"
 
-    return result
+local function capture(command)
+  local handle = io.popen(command .. " 2>&1")
+  if not handle then
+    return nil, "failed to run command"
+  end
+  local output = handle:read("*a")
+  local first, _, code = handle:close()
+
+  local success
+  if first == true then
+    success = true
+  elseif first == nil then
+    success = false
+  else
+    success = (first == 0)
+  end
+
+  if not success then
+    return nil, output
+  end
+  return output
 end
 
--- Function to update Git branch
-local function update_git(branch)
-    print("\27[93mupdate-git: Fetching...\27[0m")
-    run_command("git fetch")
-
-    local merge_branch, message
-
-    if branch then
-        merge_branch = "origin/" .. branch
-        message = string.format("Auto-merge update: Merged %s to branch using update-git Lua script (git fetch; git merge %s; git push;)", branch, merge_branch)
-        print(string.format("\27[93mupdate-git: Merging %s into the current branch...\27[0m", merge_branch))
-    else
-        merge_branch = "origin/master"
-        message = string.format("Auto-merge update: Merged master to branch using update-git Lua script (git fetch; git merge %s; git push;)", merge_branch)
-        print(string.format("\27[93mupdate-git: Merging %s into the current branch...\27[0m", merge_branch))
-    end
-
-    run_command(string.format("git merge %s -m \"%s\"", merge_branch, message))
-
-    print("\27[93mupdate-git: Pushing changes...\27[0m")
-    run_command("git push")
-
-    if branch then
-        print(string.format("\27[92mupdate-git: Auto-merge complete. Your branch is now up to date with %s.\27[0m", branch))
-    else
-        print("\27[92mupdate-git: Auto-merge complete. Your branch is now up to date with master.\27[0m")
-    end
+local function run(command)
+  local output, err = capture(command)
+  if not output then
+    io.stderr:write("Error: " .. err .. "\n")
+    os.exit(1)
+  end
+  return output
 end
 
--- Parse command-line arguments
-local parser = argparse("update_git", "Update the current Git branch with another branch.")
-parser:option("-b --branch", "The branch to merge into the current branch")
+local function main()
+  local branch
+  local i = 1
+  while i <= #arg do
+    if arg[i] == "-b" or arg[i] == "--branch" then
+      branch = arg[i + 1]
+      i = i + 2
+    else
+      i = i + 1
+    end
+  end
 
-local args = parser:parse()
+  local target = branch or DEFAULT_BRANCH
+  local merge_branch = "origin/" .. target
 
--- Run the update_git function with the provided branch
-update_git(args.branch)
+  print(YELLOW .. "update-git: Fetching..." .. RESET)
+  run("git fetch")
+
+  local message = string.format(
+    "Auto-merge update: Merged %s to branch using update-git Lua script (git fetch; git merge %s; git push;)",
+    target, merge_branch)
+  print(YELLOW .. "update-git: Merging " .. merge_branch .. " into the current branch..." .. RESET)
+  run(string.format("git merge %s -m \"%s\"", merge_branch, message))
+
+  print(YELLOW .. "update-git: Pushing changes..." .. RESET)
+  run("git push")
+
+  print(GREEN .. "update-git: Auto-merge complete. Your branch is now up to date with " .. target .. "." .. RESET)
+end
+
+main()

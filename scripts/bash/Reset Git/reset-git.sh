@@ -1,3 +1,4 @@
+# reset-git - Hard-resets the current branch to origin/main and force-pushes.
 reset-git() {
     echo -e "\033[33mreset-git: Fetching...\033[0m"
     git fetch

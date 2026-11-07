@@ -1,103 +1,98 @@
+# dotnet-analysis - Summarizes DbCommands, actions, action methods and endpoints from a .NET log.
 dotnet-analysis() {
     local file="${1:-TestFile1.txt}"
-    [[ ! -f "$file" ]] && echo -e "\033[31mFile not found: $file\033[0m" && return 1
-
-    local lineNumber=1
-    local currentDbCommand=""
-    local currentLineStart=""
-    local dbCommandLines=()
-    local actionMethodLines=()
-    local actionLines=()
-    local endpointLines=()
-
-    # Process and classify lines
-    while IFS= read -r line; do
-        if [[ "$line" == *"Executed action method"* ]]; then
-            actionMethodLines+=("$lineNumber $line")
-        elif [[ "$line" == *"Executed action"* ]]; then
-            actionLines+=("$lineNumber $line")
-        elif [[ "$line" == *"Executed endpoint"* ]]; then
-            endpointLines+=("$lineNumber $line")
-        elif [[ "$line" == *"Executed DbCommand"* ]]; then
-            if [[ -n "$currentDbCommand" ]]; then
-                dbCommandLines+=("$(process-db-block "$currentDbCommand" "$currentLineStart")")
-            fi
-            currentDbCommand="$line"
-            currentLineStart="$lineNumber"
-        elif [[ -n "$currentDbCommand" ]]; then
-            currentDbCommand+="
-$line"
-        fi
-        ((lineNumber++))
-    done < "$file"
-
-    # Process final DbCommand block
-    if [[ -n "$currentDbCommand" ]]; then
-        dbCommandLines+=("$(process-db-block "$currentDbCommand" "$currentLineStart")")
+    if [[ ! -f "$file" ]]; then
+        echo -e "\033[31mFile not found: $file\033[0m" >&2
+        return 1
     fi
 
-    # Sort and group
-    IFS=$'\n' sortedDb=($(sort -n <<<"${dbCommandLines[*]}"))
-    groupedDb=($(group-db-lines "${sortedDb[@]}"))
+    local line_number=1
+    local current_db=""
+    local current_start=""
+    local db_lines=() action_methods=() actions=() endpoints=()
 
-    IFS=$'\n' actionMethodLines=($(sort -n <<<"${actionMethodLines[*]}"))
-    IFS=$'\n' actionLines=($(sort -n <<<"${actionLines[*]}"))
-    IFS=$'\n' endpointLines=($(sort -n <<<"${endpointLines[*]}"))
+    local line
+    while IFS= read -r line; do
+        if [[ "$line" == *"Executed action method"* ]]; then
+            action_methods+=("$line_number $line")
+        elif [[ "$line" == *"Executed action"* ]]; then
+            actions+=("$line_number $line")
+        elif [[ "$line" == *"Executed endpoint"* ]]; then
+            endpoints+=("$line_number $line")
+        elif [[ "$line" == *"Executed DbCommand"* ]]; then
+            if [[ -n "$current_db" ]]; then
+                db_lines+=("$(process-db-block "$current_db" "$current_start")")
+            fi
+            current_db="$line"
+            current_start="$line_number"
+        elif [[ -n "$current_db" ]]; then
+            current_db+=$'\n'"$line"
+        fi
+        ((line_number++))
+    done < "$file"
+
+    if [[ -n "$current_db" ]]; then
+        db_lines+=("$(process-db-block "$current_db" "$current_start")")
+    fi
+
+    local grouped
+    grouped=$(group-db-lines "${db_lines[@]}")
 
     echo -e "\n\033[36m--- Executed DbCommands ---\033[0m"
-    for line in "${groupedDb[@]}"; do echo -e "\033[33m$line\033[0m"; done
+    echo -e "\033[33m$grouped\033[0m"
 
     echo -e "\n\033[36m--- Executed Action Methods ---\033[0m"
-    for line in "${actionMethodLines[@]}"; do echo -e "\033[33m$line\033[0m"; done
+    printf '\033[33m%s\033[0m\n' "${action_methods[@]}"
 
     echo -e "\n\033[36m--- Executed Actions ---\033[0m"
-    for line in "${actionLines[@]}"; do echo -e "\033[33m$line\033[0m"; done
+    printf '\033[33m%s\033[0m\n' "${actions[@]}"
 
     echo -e "\n\033[36m--- Executed Endpoints ---\033[0m"
-    for line in "${endpointLines[@]}"; do echo -e "\033[33m$line\033[0m"; done
+    printf '\033[33m%s\033[0m\n' "${endpoints[@]}"
 }
 
 process-db-block() {
     local block="$1"
-    local lineStart="$2"
+    local line_start="$2"
 
-    local dbName="Unknown DB"
+    local db_name="Unknown DB"
     if [[ "$block" =~ FROM\ \[([A-Za-z0-9_]+)\] ]]; then
-        dbName="${BASH_REMATCH[1]}"
+        db_name="${BASH_REMATCH[1]}"
     elif [[ "$block" =~ UPDATE\ \[([A-Za-z0-9_]+)\] ]]; then
-        dbName="${BASH_REMATCH[1]}"
+        db_name="${BASH_REMATCH[1]}"
     fi
 
     local joins=()
     while [[ "$block" =~ JOIN\ \[([A-Za-z0-9_]+)\] ]]; do
         joins+=("${BASH_REMATCH[1]}")
-        block="${block/${BASH_REMATCH[0]}/}" # Remove to find next
+        block="${block//${BASH_REMATCH[0]}/}"
     done
 
     if (( ${#joins[@]} > 0 )); then
-        local joinString
-        joinString=$(IFS=, ; echo "${joins[*]}")
-        echo "$lineStart [INF] Executed DbCommand from DB [$dbName] with joins: [$joinString]"
+        local join_string
+        join_string=$(IFS=,; echo "${joins[*]}")
+        echo "$line_start [INF] Executed DbCommand from DB [$db_name] with joins: [$join_string]"
     else
-        echo "$lineStart [INF] Executed DbCommand from DB [$dbName]"
+        echo "$line_start [INF] Executed DbCommand from DB [$db_name]"
     fi
 }
 
 group-db-lines() {
     local grouped=()
-    local prevInfo=""
-    local currentGroup=""
+    local prev_info=""
+    local current_group=""
+    local line number info
     for line in "$@"; do
-        local number="${line%% *}"
-        local info="${line#* }"
-        if [[ "$info" == "$prevInfo" ]]; then
-            currentGroup+=", $number"
+        number="${line%% *}"
+        info="${line#* }"
+        if [[ "$info" == "$prev_info" ]]; then
+            current_group+=", $number"
         else
-            [[ -n "$currentGroup" ]] && grouped+=("$currentGroup $prevInfo")
-            currentGroup="$number"
-            prevInfo="$info"
+            [[ -n "$current_group" ]] && grouped+=("$current_group $prev_info")
+            current_group="$number"
+            prev_info="$info"
         fi
     done
-    [[ -n "$currentGroup" ]] && grouped+=("$currentGroup $prevInfo")
-    echo "${grouped[@]}"
+    [[ -n "$current_group" ]] && grouped+=("$current_group $prev_info")
+    printf '%s\n' "${grouped[@]}"
 }

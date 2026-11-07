@@ -1,23 +1,44 @@
-def rebase_git(branch = nil)
-  puts "\e[33mrebase-git: Fetching latest changes...\e[0m"
-  system("git fetch")
+#!/usr/bin/env ruby
+# frozen_string_literal: true
 
-  rebase_branch = branch ? "origin/#{branch}" : "origin/master"
-  puts "\e[33mrebase-git: Rebasing onto #{rebase_branch}...\e[0m"
-  
-  unless system("git rebase #{rebase_branch}")
-    puts "\e[31mrebase-git: Rebase failed. Resolve conflicts and run 'git rebase --continue' manually.\e[0m"
-    return
+# Rebases the current branch onto origin/master or a given branch.
+
+require 'optparse'
+
+YELLOW = "\e[33m"
+GREEN = "\e[32m"
+RED = "\e[31m"
+RESET = "\e[0m"
+
+DEFAULT_BRANCH = 'master'
+
+def main
+  options = parse_options
+  target = options[:branch] || DEFAULT_BRANCH
+  rebase_branch = "origin/#{target}"
+
+  puts "#{YELLOW}rebase-git: Fetching latest changes...#{RESET}"
+  system('git', 'fetch')
+
+  puts "#{YELLOW}rebase-git: Rebasing onto #{rebase_branch}...#{RESET}"
+  unless system('git', 'rebase', rebase_branch)
+    warn "#{RED}rebase-git: Rebase failed. Resolve conflicts and run 'git rebase --continue' manually.#{RESET}"
+    exit 1
   end
 
-  puts "\e[33mrebase-git: Rebase successful. Pushing rebased changes...\e[0m"
-  system("git push --force-with-lease")
+  puts "#{YELLOW}rebase-git: Rebase successful. Pushing rebased changes...#{RESET}"
+  system('git', 'push', '--force-with-lease')
 
-  complete_msg = branch ? 
-    "rebase-git: Rebase complete. Your branch is now up to date with #{branch} (no merge commit)." :
-    "rebase-git: Rebase complete. Your branch is now up to date with master (no merge commit)."
-
-  puts "\e[32m#{complete_msg}\e[0m"
+  puts "#{GREEN}rebase-git: Rebase complete. Your branch is now up to date with #{target} (no merge commit).#{RESET}"
 end
 
-rebase_git(ARGV[0])
+def parse_options
+  options = {}
+  OptionParser.new do |opts|
+    opts.banner = 'Usage: rebase-git.rb [--branch BRANCH]'
+    opts.on('-b', '--branch BRANCH', 'Branch to rebase onto (default: master)') { |b| options[:branch] = b }
+  end.parse!
+  options
+end
+
+main if __FILE__ == $PROGRAM_NAME

@@ -1,15 +1,13 @@
-function svelte-start() {
-    port=5173
+# svelte-start - Starts a Svelte development server and opens it in the browser.
+svelte-start() {
+    local port="${1:-5173}"
+    local command="${2:-npm run dev}"
 
-    if command -v wt.exe &> /dev/null; then
-        wt.exe powershell.exe -NoExit -Command "npm run dev"
-    else
-        powershell.exe -NoExit -Command "npm run dev" &
-    fi
+    echo -e "\033[33msvelte-start: starting on port $port...\033[0m"
+    ($command &)
+    sleep 2
 
-    if command -v chrome.exe &> /dev/null; then
-        chrome.exe "http://localhost:$port/"
-    else
-        xdg-open "http://localhost:$port/" 2>/dev/null || start "http://localhost:$port/"
-    fi
+    xdg-open "http://localhost:$port" >/dev/null 2>&1 \
+        || open "http://localhost:$port" >/dev/null 2>&1 \
+        || start "http://localhost:$port" >/dev/null 2>&1
 }

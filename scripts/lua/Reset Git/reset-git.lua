@@ -1,14 +1,31 @@
-function reset_git()
-  print("\27[33mreset-git: Fetching...\27[0m")
-  os.execute("git fetch")
+-- Hard-resets the current branch to origin/main and force-pushes.
 
-  print("\27[33mreset-git: Resetting branch to original state...\27[0m")
-  os.execute("git reset --hard origin/main")
+local YELLOW = "\27[33m"
+local GREEN = "\27[32m"
+local RESET = "\27[0m"
 
-  print("\27[33mreset-git: Pushing changes...\27[0m")
-  os.execute("git push --force")
-
-  print("\27[32mreset-git: Reset git complete.\27[0m")
+local function run(command)
+  local first, _, code = os.execute(command)
+  if first == nil then
+    return false, code
+  elseif first == true then
+    return true
+  else
+    return first == 0
+  end
 end
 
-reset_git()
+local function main()
+  print(YELLOW .. "reset-git: Fetching..." .. RESET)
+  run("git fetch")
+
+  print(YELLOW .. "reset-git: Resetting branch to original state..." .. RESET)
+  run("git reset --hard origin/main")
+
+  print(YELLOW .. "reset-git: Pushing changes..." .. RESET)
+  run("git push --force")
+
+  print(GREEN .. "reset-git: Reset git complete." .. RESET)
+end
+
+main()

@@ -1,40 +1,42 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Counts files in the current directory tree, grouped by extension.
+
 require 'find'
 require 'optparse'
 
-def count_files(include_node)
-  current_directory = Dir.pwd
+CYAN = "\e[96m"
+YELLOW = "\e[93m"
+RESET = "\e[0m"
 
-  all_files = []
-  Find.find(current_directory) do |path|
-    if File.file?(path)
-      next if !include_node && path.include?('node_modules')
-      all_files << path
-    end
-  end
-
-  total_files = all_files.size
+def main
+  options = parse_options
   files_by_extension = Hash.new(0)
-  
-  all_files.each do |file|
-    ext = File.extname(file)
-    files_by_extension[ext] += 1
+  total = 0
+
+  Find.find(Dir.pwd) do |path|
+    next unless File.file?(path)
+    next if !options[:include_node] && path.split(File::SEPARATOR).include?('node_modules')
+
+    total += 1
+    files_by_extension[File.extname(path)] += 1
   end
 
-  # Output results
-  puts "\e[96mTotal number of files: \e[0m\e[93m#{total_files}\e[0m"
-  puts "\e[96mFiles by extension:\e[0m"
+  puts "#{CYAN}Total number of files: #{RESET}#{YELLOW}#{total}#{RESET}"
+  puts "#{CYAN}Files by extension:#{RESET}"
   files_by_extension.sort.each do |ext, count|
-    puts "\e[93m#{ext}: #{count}\e[0m"
+    puts "#{YELLOW}#{ext}: #{count}#{RESET}"
   end
 end
 
-options = {}
-OptionParser.new do |opts|
-  opts.banner = 'Usage: count_files.rb [options]'
+def parse_options
+  options = { include_node: false }
+  OptionParser.new do |opts|
+    opts.banner = 'Usage: count_files.rb [--includenode]'
+    opts.on('--includenode', 'Include files in node_modules directories') { options[:include_node] = true }
+  end.parse!
+  options
+end
 
-  opts.on('--includenode', 'Include files in node_modules directory') do |v|
-    options[:include_node] = v
-  end
-end.parse!
-
-count_files(options[:include_node])
+main if __FILE__ == $PROGRAM_NAME

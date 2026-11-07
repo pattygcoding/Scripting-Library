@@ -1,8 +1,9 @@
+# create-file - Creates a new file, defaulting to a .txt extension.
 create-file() {
     local name="$1"
 
     if [[ -z "$name" ]]; then
-        echo "Usage: create-file <filename>"
+        echo "Usage: create-file <filename>" >&2
         return 1
     fi
 
@@ -10,5 +11,6 @@ create-file() {
         name="${name}.txt"
     fi
 
-    : > "$name"
+    touch -- "$name"
+    echo "Created $name"
 }

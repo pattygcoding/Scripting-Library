@@ -77,43 +77,89 @@ Shell scripts for development, git operations, and system utilities. See the [fu
 | --- | --- |
 | [Angular Start](scripts/bash/Angular%20Start) | Start Angular development server and open browser |
 | [Cache Visual Studio Index](scripts/bash/Cache%20Visual%20Studio%20Index) | Index .cs files for faster Visual Studio file searching |
+| [Clear Downloads](scripts/bash/Clear%20Downloads) | Clear the Downloads folder |
 | [Clear Git](scripts/bash/Clear%20Git) | Delete local branches that don't have corresponding origin remotes |
 | [Compare Diff](scripts/bash/Compare%20Diff) | Compare two files with colorized diff output |
 | [Compress Git](scripts/bash/Compress%20Git) | Compress multiple commits into a single commit |
+| [Connect Four](scripts/bash/Connect%20Four) | Play Connect Four in the console |
+| [Count Files](scripts/bash/Count%20Files) | Count files in the current directory and subdirectories |
 | [Create File](scripts/bash/Create%20File) | Create a new empty file with automatic .txt extension |
 | [Dotnet Analysis](scripts/bash/Dotnet%20Analysis) | Analyze .NET application logs and extract executed commands |
+| [Gensql Col](scripts/bash/Gensql%20Col) | Generate SQL to find a column by name |
+| [Gensql Count](scripts/bash/Gensql%20Count) | Generate SQL to count a table's rows |
+| [Goto](scripts/bash/Goto) | Jump to a frequently used directory |
 | [India Time](scripts/bash/India%20Time) | Convert time to India timezone or show current India time |
+| [Ip](scripts/bash/Ip) | Return your IP address |
+| [Neovim](scripts/bash/Neovim) | Find a file by name and open it in Neovim |
 | [New Branch](scripts/bash/New%20Branch) | Create and checkout a new git branch from master |
 | [Nginx](scripts/bash/Nginx) | Start or reload nginx server |
+| [Print](scripts/bash/Print) | Print text with optional ANSI color |
+| [Random Password](scripts/bash/Random%20Password) | Generate a random password |
 | [React Start](scripts/bash/React%20Start) | Start React development server and open browser |
 | [Rebase Git](scripts/bash/Rebase%20Git) | Rebase current branch onto master or specified branch |
 | [Rebase Git All](scripts/bash/Rebase%20Git%20All) | Rebase all local branches onto their upstream branches |
+| [Regvim](scripts/bash/Regvim) | Find a file by name and open it in Vim |
 | [Reset Git](scripts/bash/Reset%20Git) | Hard reset current branch to origin state |
 | [Safe Unzip](scripts/bash/Safe%20Unzip) | Safely extract zip files with security checks and limits |
+| [Search Match](scripts/bash/Search%20Match) | Search a directory tree for one or more terms |
+| [Stack Trace](scripts/bash/Stack%20Trace) | Extract file paths from a .NET stack trace |
+| [Start Mod](scripts/bash/Start%20Mod) | Build and launch a Minecraft mod client |
 | [Svelte Start](scripts/bash/Svelte%20Start) | Start Svelte development server and open browser |
 | [Time](scripts/bash/Time) | Time the execution of any command |
 | [Undo Commit](scripts/bash/Undo%20Commit) | Undo the last commit with configurable reset mode |
-| [Update GIt](scripts/bash/Update%20GIt) | Merge latest changes from master or specified branch |
+| [Unit Tests](scripts/bash/Unit%20Tests) | Clean, build, and test a .NET project |
+| [Update Git](scripts/bash/Update%20Git) | Merge latest changes from master or specified branch |
 | [Update Git All](scripts/bash/Update%20Git%20All) | Update all local branches with latest changes |
 | [Vs](scripts/bash/Vs) | Open files in Visual Studio using cached index for fast file discovery |
+| [Vsc](scripts/bash/Vsc) | Find a file by name and open it in VS Code |
 | [Vue Start](scripts/bash/Vue%20Start) | Start Vue development server and open browser |
 
 ## Lua
 
-Standalone Lua utilities that only need the standard library (plus `dkjson` where noted).
-See the [full documentation](scripts/lua/README.md).
+Standalone Lua utilities built on the standard library, with `lfs` for filesystem access
+(plus `dkjson` and `socket` where noted). See the [full documentation](scripts/lua/README.md).
 
 | Script | Description |
 | --- | --- |
+| [Angular Start](scripts/lua/Angular%20Start) | Start an Angular dev server and open Chrome |
+| [Cache Visual Studio Index](scripts/lua/Cache%20Visual%20Studio%20Index) | Build and update an index of .cs files |
+| [Clear Downloads](scripts/lua/Clear%20Downloads) | Clear the Downloads folder |
 | [Clear Git](scripts/lua/Clear%20Git) | Delete local branches that don't have upstream tracking |
+| [Compare Diff](scripts/lua/Compare%20Diff) | Compare two files line by line and highlight the differences |
+| [Compress Git](scripts/lua/Compress%20Git) | Compress multiple commits into one |
+| [Connect Four](scripts/lua/Connect%20Four) | Play Connect Four in the console |
 | [Count Files](scripts/lua/Count%20Files) | Count files in the current directory and subdirectories |
+| [Create File](scripts/lua/Create%20File) | Create a new file, defaulting to .txt |
 | [Dotnet Analysis](scripts/lua/Dotnet%20Analysis) | Analyze .NET logs for actions, endpoints, and database commands |
+| [Gensql Col](scripts/lua/Gensql%20Col) | Generate SQL to find a column by name |
+| [Gensql Count](scripts/lua/Gensql%20Count) | Generate SQL to count a table's rows |
+| [Goto](scripts/lua/Goto) | Jump to a frequently used directory |
+| [India Time](scripts/lua/India%20Time) | Convert a time to India Standard Time |
+| [Ip](scripts/lua/Ip) | Return your IP address |
 | [JSON to CSV](scripts/lua/JSON%20to%20CSV) | Convert a JSON array of objects into CSV |
+| [Neovim](scripts/lua/Neovim) | Find a file by name and open it in Neovim |
+| [New Branch](scripts/lua/New%20Branch) | Create a new Git branch from origin/master |
+| [Nginx](scripts/lua/Nginx) | Start or reload a local Nginx server |
+| [Print](scripts/lua/Print) | Print text with optional ANSI color |
 | [Random Password](scripts/lua/Random%20Password) | Generate a random password with a customizable length |
+| [React Start](scripts/lua/React%20Start) | Start a React dev server and open Chrome |
 | [Rebase Git](scripts/lua/Rebase%20Git) | Rebase the current branch and force-with-lease push |
+| [Rebase Git All](scripts/lua/Rebase%20Git%20All) | Rebase every local branch onto its upstream |
+| [Regvim](scripts/lua/Regvim) | Find a file by name and open it in Vim |
 | [Reset Git](scripts/lua/Reset%20Git) | Reset the current branch to match `origin/main` |
+| [Safe Unzip](scripts/lua/Safe%20Unzip) | Safely extract a ZIP archive |
+| [Search Match](scripts/lua/Search%20Match) | Search a directory tree for one or more terms |
+| [Stack Trace](scripts/lua/Stack%20Trace) | Extract file paths from a .NET stack trace |
+| [Start Mod](scripts/lua/Start%20Mod) | Build and launch a Minecraft mod client |
+| [Svelte Start](scripts/lua/Svelte%20Start) | Start a Svelte dev server and open Chrome |
+| [Time](scripts/lua/Time) | Time any operation |
 | [Undo Commit](scripts/lua/Undo%20Commit) | Undo the last commit using a hard, mixed, or soft reset |
+| [Unit Tests](scripts/lua/Unit%20Tests) | Clean, build, and test a .NET project |
 | [Update Git](scripts/lua/Update%20Git) | Fetch and merge the latest changes from a branch |
+| [Update Git All](scripts/lua/Update%20Git%20All) | Update every local branch |
+| [Vs](scripts/lua/Vs) | Find a file by name and open it in Visual Studio |
+| [Vsc](scripts/lua/Vsc) | Find a file by name and open it in VS Code |
+| [Vue Start](scripts/lua/Vue%20Start) | Start a Vue dev server and open Chrome |
 
 ## PowerShell
 
@@ -231,15 +277,45 @@ Ruby equivalents of the common utilities. See the [full documentation](scripts/r
 
 | Script | Description |
 | --- | --- |
+| [Angular Start](scripts/ruby/Angular%20Start) | Start an Angular dev server and open Chrome |
+| [Cache Visual Studio Index](scripts/ruby/Cache%20Visual%20Studio%20Index) | Build and update an index of .cs files |
+| [Clear Downloads](scripts/ruby/Clear%20Downloads) | Clear the Downloads folder |
 | [Clear Git](scripts/ruby/Clear%20Git) | Delete local branches without a remote origin branch |
+| [Compare Diff](scripts/ruby/Compare%20Diff) | Compare two files line by line and highlight the differences |
+| [Compress Git](scripts/ruby/Compress%20Git) | Compress multiple commits into one |
+| [Connect Four](scripts/ruby/Connect%20Four) | Play Connect Four in the console |
 | [Count Files](scripts/ruby/Count%20Files) | Count files in a directory tree |
+| [Create File](scripts/ruby/Create%20File) | Create a new file, defaulting to .txt |
 | [Dotnet Analysis](scripts/ruby/Dotnet%20Analysis) | Analyze .NET logs for database commands and endpoints |
+| [Gensql Col](scripts/ruby/Gensql%20Col) | Generate SQL to find a column by name |
+| [Gensql Count](scripts/ruby/Gensql%20Count) | Generate SQL to count a table's rows |
+| [Goto](scripts/ruby/Goto) | Jump to a frequently used directory |
+| [India Time](scripts/ruby/India%20Time) | Convert a time to India Standard Time |
+| [Ip](scripts/ruby/Ip) | Return your IP address |
 | [JSON to CSV](scripts/ruby/JSON%20to%20CSV) | Convert a JSON file to CSV |
+| [Neovim](scripts/ruby/Neovim) | Find a file by name and open it in Neovim |
+| [New Branch](scripts/ruby/New%20Branch) | Create a new Git branch from origin/master |
+| [Nginx](scripts/ruby/Nginx) | Start or reload a local Nginx server |
+| [Print](scripts/ruby/Print) | Print text with optional ANSI color |
 | [Random Password](scripts/ruby/Random%20Password) | Generate a random password |
+| [React Start](scripts/ruby/React%20Start) | Start a React dev server and open Chrome |
 | [Rebase Git](scripts/ruby/Rebase%20Git) | Rebase the current branch and force-with-lease push |
+| [Rebase Git All](scripts/ruby/Rebase%20Git%20All) | Rebase every local branch onto its upstream |
+| [Regvim](scripts/ruby/Regvim) | Find a file by name and open it in Vim |
 | [Reset Git](scripts/ruby/Reset%20Git) | Hard reset the current branch to `origin/main` |
+| [Safe Unzip](scripts/ruby/Safe%20Unzip) | Safely extract a ZIP archive |
+| [Search Match](scripts/ruby/Search%20Match) | Search a directory tree for one or more terms |
+| [Stack Trace](scripts/ruby/Stack%20Trace) | Extract file paths from a .NET stack trace |
+| [Start Mod](scripts/ruby/Start%20Mod) | Build and launch a Minecraft mod client |
+| [Svelte Start](scripts/ruby/Svelte%20Start) | Start a Svelte dev server and open Chrome |
+| [Time](scripts/ruby/Time) | Time any operation |
 | [Undo Commit](scripts/ruby/Undo%20Commit) | Undo the last commit using a hard, mixed, or soft reset |
+| [Unit Tests](scripts/ruby/Unit%20Tests) | Clean, build, and test a .NET project |
 | [Update Git](scripts/ruby/Update%20Git) | Fetch and merge the latest changes |
+| [Update Git All](scripts/ruby/Update%20Git%20All) | Update every local branch |
+| [Vs](scripts/ruby/Vs) | Find a file by name and open it in Visual Studio |
+| [Vsc](scripts/ruby/Vsc) | Find a file by name and open it in VS Code |
+| [Vue Start](scripts/ruby/Vue%20Start) | Start a Vue dev server and open Chrome |
 
 ## VBA
 

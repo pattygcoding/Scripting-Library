@@ -1,26 +1,18 @@
-function update-git() {
+# update-git - Fetches and merges the latest changes into the current Git branch.
+update-git() {
     local branch="$1"
+    local target="${branch:-master}"
+    local merge_branch="origin/$target"
 
-    echo -e "\e[33mupdate-git: Fetching...\e[0m"
+    echo -e "\033[33mupdate-git: Fetching...\033[0m"
     git fetch
 
-    if [[ -n "$branch" ]]; then
-        local merge_branch="origin/$branch"
-        local message="Auto-merge update: Merged $branch to branch using update-git Bash function (git fetch; git merge $merge_branch; git push;)"
-        echo -e "\e[33mupdate-git: Merging $merge_branch into the current branch...\e[0m"
-    else
-        local merge_branch="origin/master"
-        local message="Auto-merge update: Merged master to branch using update-git Bash function (git fetch; git merge $merge_branch; git push;)"
-        echo -e "\e[33mupdate-git: Merging $merge_branch into the current branch...\e[0m"
-    fi
-
+    local message="Auto-merge update: Merged $target to branch using update-git Bash function (git fetch; git merge $merge_branch; git push;)"
+    echo -e "\033[33mupdate-git: Merging $merge_branch into the current branch...\033[0m"
     git merge "$merge_branch" -m "$message"
-    echo -e "\e[33mupdate-git: Pushing changes...\e[0m"
+
+    echo -e "\033[33mupdate-git: Pushing changes...\033[0m"
     git push
 
-    if [[ -n "$branch" ]]; then
-        echo -e "\e[32mupdate-git: Auto-merge complete. Your branch is now up to date with $branch.\e[0m"
-    else
-        echo -e "\e[32mupdate-git: Auto-merge complete. Your branch is now up to date with master.\e[0m"
-    fi
+    echo -e "\033[32mupdate-git: Auto-merge complete. Your branch is now up to date with $target.\033[0m"
 }

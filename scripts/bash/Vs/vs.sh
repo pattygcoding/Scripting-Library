@@ -1,12 +1,14 @@
-function vs() {
-    file_name="$1"
-    index_file="$2"
+# vs - Finds a file by name and opens it in Visual Studio.
+vs() {
+    local file_name="$1"
+    local index_file="$2"
 
-    if [ -z "$file_name" ]; then
-        echo "Please provide a file name." >&2
+    if [[ -z "$file_name" ]]; then
+        echo "vs: please provide a file name." >&2
         return 1
     fi
 
+    local base ext search_file
     base=$(basename "$file_name" | sed 's/\.[^.]*$//')
     ext="${file_name##*.}"
     if [[ "$file_name" == "$ext" ]]; then
@@ -15,36 +17,37 @@ function vs() {
         search_file="$file_name"
     fi
 
-    declare -A vs_index
+    declare -A vs_index=()
 
-    if [ -f "$index_file" ]; then
+    if [[ -f "$index_file" ]]; then
+        local key dirs
         while IFS='|' read -r key dirs; do
-            IFS=';' read -ra dir_array <<< "$dirs"
-            vs_index["$key"]="${dir_array[@]}"
+            [[ -n "$key" ]] && vs_index["$key"]="$dirs"
         done < "$index_file"
 
         if [[ -n "${vs_index[$base]}" ]]; then
-            found_paths=()
-            for dir in ${vs_index[$base]}; do
+            local found_paths=()
+            local dir full_path
+            IFS=';' read -ra dir_array <<< "${vs_index[$base]}"
+            for dir in "${dir_array[@]}"; do
                 full_path="$dir/$search_file"
-                if [ -f "$full_path" ]; then
-                    found_paths+=("$full_path")
-                fi
+                [[ -f "$full_path" ]] && found_paths+=("$full_path")
             done
 
-            if [ ${#found_paths[@]} -gt 0 ]; then
+            if [[ ${#found_paths[@]} -gt 0 ]]; then
+                local path
                 for path in "${found_paths[@]}"; do
                     powershell.exe -Command "Write-Host 'Opened (cache): $path' -ForegroundColor Yellow"
                 done
-                powershell.exe -Command "devenv.exe /Edit $(printf '"%s" ' "${found_paths[@]}")"
+                powershell.exe -Command "devenv.exe /Edit $(printf '\"%s\" ' "${found_paths[@]}")"
                 return 0
             fi
         fi
     fi
 
-    excludes=("bin" "obj" ".git" "node_modules")
-    matches=()
-
+    local excludes=("bin" "obj" ".git" "node_modules")
+    local matches=()
+    local f skip ex
     while IFS= read -r -d '' f; do
         skip=0
         for ex in "${excludes[@]}"; do
@@ -53,18 +56,17 @@ function vs() {
                 break
             fi
         done
-        if [ $skip -eq 0 ]; then
-            matches+=("$f")
-        fi
+        [[ $skip -eq 0 ]] && matches+=("$f")
     done < <(find . -type f -name "$search_file" -print0)
 
-    if [ ${#matches[@]} -eq 0 ]; then
-        echo "No instances of '$search_file' found under '$PWD'." >&2
+    if [[ ${#matches[@]} -eq 0 ]]; then
+        echo "vs: no instances of '$search_file' found under '$PWD'." >&2
         return 1
     fi
 
+    local path
     for path in "${matches[@]}"; do
         powershell.exe -Command "Write-Host 'Opened (fs): $path' -ForegroundColor Yellow"
     done
-    powershell.exe -Command "devenv.exe /Edit $(printf '"%s" ' "${matches[@]}")"
+    powershell.exe -Command "devenv.exe /Edit $(printf '\"%s\" ' "${matches[@]}")"
 }
