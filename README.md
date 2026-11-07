@@ -325,10 +325,16 @@ Office Script (`.ts`). See the [full documentation](scripts/vba/README.md) for i
 
 | Script | Description |
 | --- | --- |
+| [Build Insert](scripts/vba/Build%20Insert) | Build INSERT statements from a header and data rows |
 | [Compare Columns](scripts/vba/Compare%20Columns) | Compare two columns and return the differences |
 | [Compare Rows](scripts/vba/Compare%20Rows) | Compare two rows and return the differences |
-| [Delete Duplicate Rows](scripts/vba/Delete%20Duplicate%20Rows) | Delete duplicate rows from a sheet |
-| [Obtain SQL](scripts/vba/Obtain%20SQL) | Build the SQL format for a header and value row |
+| [Compare Sheets](scripts/vba/Compare%20Sheets) | Compare two sheets cell by cell |
+| [Count Distinct](scripts/vba/Count%20Distinct) | Count the distinct, non-blank values in a column |
+| [Delete Duplicate Rows](scripts/vba/Delete%20Duplicate%20Rows) | Delete rows whose key columns repeat an earlier row |
+| [Find Duplicates](scripts/vba/Find%20Duplicates) | List the values that appear more than once in a column |
+| [Obtain SQL](scripts/vba/Obtain%20SQL) | Build the SQL column list for a header and value row |
+| [Split Column](scripts/vba/Split%20Column) | Split a column into several on a delimiter |
+| [Trim Whitespace](scripts/vba/Trim%20Whitespace) | Trim leading and trailing spaces across a range |
 
 ## Usage
 

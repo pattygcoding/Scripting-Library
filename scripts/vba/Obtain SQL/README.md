@@ -1,13 +1,35 @@
 # Obtain SQL
-Obtains the SQL format for a header and value row.
+
+Builds the SELECT column list for a query out of a header row and a value row: `value1 as [Header1], value2 as [Header2], ...`.
 
 ## Parameters
-- `headerRow`: The number of the first row to compare.
-- `valueRow`: The number of the second row to compare.
-- `sheet`: the name of the sheet (defualt: your current sheet)
 
-## Examples:
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `headerRow` | number | Row holding the column headers. |
+| `valueRow` | number | Row holding the values to keep as literals. |
+| `sheet` | string | Optional sheet name. Defaults to the active sheet. |
+
+## Returns
+
+The comma-and-newline separated column list. Cells whose value is blank are skipped.
+
+## Platforms
+
+- **Excel (VBA)** — `ObtainSQL.vba`
+- **Google Sheets (Apps Script)** — `obtainSql.gs`
+- **Office Script (TypeScript)** — `obtainSql.ts`
+
+## Examples
+
 ```
-=obtainSQL(2, 3)
-=obtainSQL(2, 3, "Sheet2")
+=ObtainSQL(1, 2)
+=ObtainSQL(1, 2, "Sheet2")
+```
+
+Given a header row of `id | name | email` and a value row of `1 | Jane |` (blank email), returns:
+
+```
+1 as [id],
+Jane as [name]
 ```

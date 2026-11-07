@@ -1,16 +1,30 @@
 # Compare Rows
-Compares 2 rows and returns the differences.
+
+Compares two rows of a sheet and returns the columns that differ.
 
 ## Parameters
-- `row1`: The number of the first row to compare.
-- `row2`: The number of the second row to compare.
-- `sheet`: the name of the sheet (defualt: your current sheet)
-- `includeTimestamps`: Displays timestamp differences if TRUE
 
-## Examples:
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `row1` | number | First row number to compare, e.g. `2`. |
+| `row2` | number | Second row number to compare, e.g. `3`. |
+| `sheet` | string | Optional sheet name. Defaults to the active sheet. |
+| `includeTimestamps` | boolean | When `TRUE`, every column is compared. When `FALSE` (default), columns whose two cells both look like SQL Server timestamps are skipped, since those always differ. |
+
+## Returns
+
+A newline-separated report of the differing columns (`Column C: value1 vs value2`), or `"No differences"`.
+
+## Platforms
+
+- **Excel (VBA)** — `CompareRows.vba`
+- **Google Sheets (Apps Script)** — `compareRows.gs`
+- **Office Script (TypeScript)** — `compareRows.ts`
+
+## Examples
+
 ```
-=compareRows(2, 3)
-=compareRows(2, 3, "Sheet2")
-=compareRows(2, 3, , TRUE)
-=compareRows(2, 3, "Sheet2", TRUE)
+=CompareRows(2, 3)
+=CompareRows(2, 3, "Sheet2")
+=CompareRows(2, 3, , TRUE)
 ```

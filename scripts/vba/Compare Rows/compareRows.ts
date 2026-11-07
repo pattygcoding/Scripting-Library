@@ -1,45 +1,69 @@
-function main(workbook: ExcelScript.Workbook) {
-  // Set up the parameters
-  let headerRow = 1; // Example header row
-  let valueRow = 2;  // Example value row
-  let includeTimestamps = false; // Example setting for timestamp inclusion
+/**
+ * CompareRows  -  Office Script (TypeScript)
+ *
+ * Compares two rows of a worksheet and returns the columns that differ.  Run it
+ * from Excel's Automate tab; set the inputs at the top of `main`.
+ */
 
-  // Call the compareRows function with the active sheet
-  let result = compareRows(headerRow, valueRow, includeTimestamps, workbook.getActiveWorksheet());
-  
-  // Output the result (you can change this to display in the sheet, etc.)
-  console.log(result);
+// ---- Inputs ----------------------------------------------------------------
+function main(workbook: ExcelScript.Workbook): void {
+  const row1 = 2;
+  const row2 = 3;
+  const includeTimestamps = false;
+
+  const report = compareRows(row1, row2, workbook.getActiveWorksheet(), includeTimestamps);
+  console.log(report);
 }
 
-function compareRows(row1: number, row2: number, includeTimestamps: boolean, sheet: ExcelScript.Worksheet): string {
-  // Get the data from the specified rows
-  let rowData1 = sheet.getRangeByIndexes(row1 - 1, 0, 1, sheet.getUsedRange().getColumnCount()).getValues()[0];
-  let rowData2 = sheet.getRangeByIndexes(row2 - 1, 0, 1, sheet.getUsedRange().getColumnCount()).getValues()[0];
-  let differences: string[] = [];
-  
-  for (let i = 0; i < rowData1.length; i++) {
-    if (!includeTimestamps && isTimestamp(rowData1[i]) && isTimestamp(rowData2[i])) {
-      continue; // Skip comparison if both are timestamps and includeTimestamps is FALSE
-    }
+/**
+ * Compares two rows of `sheet` and returns the columns that differ.
+ * @param includeTimestamps When true, every column is compared; when false, columns
+ *     whose two cells both look like SQL Server timestamps are skipped.
+ */
+function compareRows(
+  row1: number,
+  row2: number,
+  sheet: ExcelScript.Worksheet,
+  includeTimestamps: boolean,
+): string {
+  const lastCol = sheet.getUsedRange().getColumnCount();
+  const values1 = sheet.getRangeByIndexes(row1 - 1, 0, 1, lastCol).getValues()[0];
+  const values2 = sheet.getRangeByIndexes(row2 - 1, 0, 1, lastCol).getValues()[0];
 
-    if (includeTimestamps && !isTimestamp(rowData1[i]) && !isTimestamp(rowData2[i])) {
-      continue; // Skip comparison if neither are timestamps and includeTimestamps is TRUE
+  const differences: string[] = [];
+  for (let i = 0; i < lastCol; i++) {
+    const a = values1[i];
+    const b = values2[i];
+    if (!includeTimestamps && isTimestamp(a) && isTimestamp(b)) {
+      continue;
     }
-    
-    if (rowData1[i] !== rowData2[i]) {
-      differences.push(`Column ${String.fromCharCode(65 + i)}: ${rowData1[i]} vs ${rowData2[i]}`);
+    if (cellToString(a) !== cellToString(b)) {
+      differences.push(`Column ${columnNumberToLetter(i + 1)}: ${cellToString(a)} vs ${cellToString(b)}`);
     }
   }
-  
-  if (differences.length === 0) {
-    return "No differences";
-  } else {
-    return differences.join("\n");
-  }
+
+  return differences.length === 0 ? "No differences" : differences.join("\n");
 }
 
-// Function to check if a value is a timestamp
-function isTimestamp(value: any): boolean {
-  let timestampPattern = /^[A-Za-z]{3} [A-Za-z]{3} \d{2} \d{4} \d{2}:\d{2}:\d{2} GMT[+-]\d{4} \(GMT[+-]\d{2}:\d{2}\)$/;
-  return typeof value === 'string' && timestampPattern.test(value);
+/** Converts a 1-based column number to its letter (1 -> "A", 28 -> "AB"). */
+function columnNumberToLetter(number: number): string {
+  let letter = "";
+  let value = number;
+  while (value > 0) {
+    const remainder = (value - 1) % 26;
+    letter = String.fromCharCode(65 + remainder) + letter;
+    value = Math.floor((value - 1) / 26);
+  }
+  return letter;
+}
+
+/** True for a value shaped like a SQL Server "Mon Jan 01 2024 12:00:00 GMT+0000 (GMT+00:00)". */
+function isTimestamp(value: unknown): boolean {
+  return typeof value === "string" &&
+    /^[A-Za-z]{3} [A-Za-z]{3} \d{2} \d{4} \d{2}:\d{2}:\d{2} GMT[+-]\d{4} \(GMT[+-]\d{2}:\d{2}\)$/.test(value);
+}
+
+/** Renders a cell value for the report; null/undefined read as empty. */
+function cellToString(value: unknown): string {
+  return value === null || value === undefined ? "" : String(value);
 }
