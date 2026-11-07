@@ -1,12 +1,36 @@
+<#
+.SYNOPSIS
+    Safely extracts a ZIP archive with zip-bomb and traversal protections.
+
+.DESCRIPTION
+    Validates a ZIP file before extracting it: rejects entries with unsafe
+    (path-traversal) names and aborts if the file count or total uncompressed
+    size exceeds the configured limits. Extracts to a sibling folder named after
+    the archive with a "_unzipped" suffix.
+
+.PARAMETER ZipPath
+    Path to the ZIP file to extract. Required.
+
+.PARAMETER MAX_FILE_COUNT
+    Maximum number of files allowed. Defaults to 1000.
+
+.PARAMETER MAX_TOTAL_SIZE_BYTES
+    Maximum total uncompressed size in bytes. Defaults to 500 MB.
+
+.EXAMPLE
+    safe-unzip "archive.zip"
+    safe-unzip "archive.zip" -MAX_FILE_COUNT 500 -MAX_TOTAL_SIZE_BYTES 104857600
+#>
 function safe-unzip {
+    [CmdletBinding()]
     param (
-        [Parameter(Position=0, Mandatory=$true)]
+        [Parameter(Position = 0, Mandatory = $true)]
         [string]$ZipPath,
 
-        [Parameter(Position=1)]
+        [Parameter(Position = 1)]
         [int]$MAX_FILE_COUNT = 1000,
 
-        [Parameter(Position=2)]
+        [Parameter(Position = 2)]
         [long]$MAX_TOTAL_SIZE_BYTES = 524288000
     )
 
@@ -17,7 +41,7 @@ function safe-unzip {
         return
     }
 
-    $DestinationPath = Join-Path -Path (Split-Path -Parent $ZipPath) -ChildPath ([IO.Path]::GetFileNameWithoutExtension($ZipPath) + "_unzipped")
+    $DestinationPath = Join-Path -Path (Split-Path -Parent $ZipPath) -ChildPath ([IO.Path]::GetFileNameWithoutExtension($ZipPath) + '_unzipped')
     New-Item -ItemType Directory -Path $DestinationPath -Force | Out-Null
 
     try {
@@ -49,5 +73,8 @@ function safe-unzip {
     }
     catch {
         Write-Error "Extraction failed: $_"
+    }
+    finally {
+        if ($zip) { $zip.Dispose() }
     }
 }

@@ -1,9 +1,26 @@
+<#
+.SYNOPSIS
+    Converts a time to India Standard Time (IST).
+
+.DESCRIPTION
+    With no input, prints the current time in India. With -InputTime, converts
+    the supplied local time to IST. Accepts times such as "8:26 AM".
+
+.PARAMETER InputTime
+    The local time to convert, in 'h:mm AM/PM' format. Optional; the current
+    time is shown when omitted.
+
+.EXAMPLE
+    india-time
+    india-time -InputTime "8:26 AM"
+#>
 function india-time {
+    [CmdletBinding()]
     param (
         [string]$InputTime
     )
 
-    $istZone = [System.TimeZoneInfo]::FindSystemTimeZoneById("India Standard Time")
+    $istZone = [System.TimeZoneInfo]::FindSystemTimeZoneById('India Standard Time')
 
     function Convert-ToIndiaTime {
         param ($dateTime)
@@ -22,7 +39,7 @@ function india-time {
             Write-Output "Inputted time in India: $($indiaTime.ToString('hh:mm tt'))"
         }
         catch {
-            Write-Host "Failed to parse time." -ForegroundColor Red
+            Write-Host 'Failed to parse time.' -ForegroundColor Red
         }
     }
     else {

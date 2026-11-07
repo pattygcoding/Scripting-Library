@@ -1,8 +1,24 @@
+<#
+.SYNOPSIS
+    Extracts relative file paths from a .NET stack trace.
+
+.DESCRIPTION
+    Parses a stack trace file and prints the relative source-file path from each
+    frame, switching separators to forward slashes and normalizing duplicated
+    slashes. Frames from the Microsoft framework are skipped.
+
+.PARAMETER Path
+    Path to the stack trace file. Defaults to "test.txt".
+
+.EXAMPLE
+    stack-trace
+    stack-trace -Path "error.txt"
+#>
 function stack-trace {
     [CmdletBinding()]
-    param(
-        [Parameter(Position=0)]
-        [string] $Path = "test.txt"
+    param (
+        [Parameter(Position = 0)]
+        [string]$Path = 'test.txt'
     )
 
     if (-not (Test-Path $Path)) {
@@ -19,10 +35,10 @@ function stack-trace {
                 $rel = (
                     (
                         $Matches[1] `
-                        -replace '[\\]+','/' `
-                        -replace '/{2,}','/' `
-                        -replace '(?i)^[A-Za-z]:/a/1/s/',''
-                    ) -replace '/r/n',''
+                            -replace '[\\]+', '/' `
+                            -replace '/{2,}', '/' `
+                            -replace '(?i)^[A-Za-z]:/a/1/s/', ''
+                    ) -replace '/r/n', ''
                 ).Trim()
 
                 Write-Host $rel -ForegroundColor Yellow

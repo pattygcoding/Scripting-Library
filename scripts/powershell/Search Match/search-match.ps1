@@ -1,20 +1,47 @@
-function search-match {
-    # -uncapped: List more than the limit 3000 results
-    # -cross: Only search for files that have all of the strings, not just any
-    # -dir: Display the full file directories, not just the file names
-    # -calls: Display only if there is a period (.) before the string. Useful for locating function calls
+<#
+.SYNOPSIS
+    Searches files of a given extension for one or more strings.
 
-    param(
+.DESCRIPTION
+    Recursively scans files matching the given extension in the current
+    directory and prints each matching line with its line number. Supports a
+    result cap, cross-term (AND) matching, full-path output, and filtering to
+    method-call usages.
+
+.PARAMETER e
+    The file extension to search (with or without the leading dot).
+
+.PARAMETER s
+    One or more strings to search for within the files.
+
+.PARAMETER uncapped
+    Switch. List more than the default 3000 results.
+
+.PARAMETER cross
+    Switch. Only report files that contain all of the given strings.
+
+.PARAMETER dir
+    Switch. Display full file paths instead of file names only.
+
+.PARAMETER calls
+    Switch. Only match the string when preceded by a period, e.g. a method call.
+
+.EXAMPLE
+    search-match -e ".cs" -s "SearchTerm1", "SearchTerm2" -cross -dir
+#>
+function search-match {
+    [CmdletBinding()]
+    param (
         [string]$e,
-        [string[]]$s,  # Accept an array of strings
+        [string[]]$s,
         [switch]$uncapped,
         [switch]$cross,
         [switch]$dir,
-        [switch]$calls # New parameter for filtering based on method call pattern
+        [switch]$calls
     )
 
-    # Ensure the extension starts with a dot
-    if (-not $e.StartsWith(".")) {
+    # Ensure the extension starts with a dot.
+    if (-not $e.StartsWith('.')) {
         $e = ".$e"
     }
 
@@ -22,31 +49,30 @@ function search-match {
     $resultsCount = 0
     $resultsCapReached = $false
 
-    # Use .NET methods to enumerate files with the specified extension in the current directory and subdirectories
     try {
-        $files = [System.IO.Directory]::EnumerateFiles((Get-Location), "*$e", [System.IO.SearchOption]::AllDirectories) | ForEach-Object { $_ }
+        $files = @([System.IO.Directory]::EnumerateFiles((Get-Location), "*$e", [System.IO.SearchOption]::AllDirectories))
 
         foreach ($file in $files) {
             if ($resultsCapReached) { break }
 
             $lines = Get-Content -Path $file
             $printedFileName = $false
-            $skipUsingDirectives = $e -eq ".cs"
+            $skipUsingDirectives = $e -eq '.cs'
             $searchActive = -not $skipUsingDirectives
             $lineNumber = 0
 
-            $termMatches = @{} # A hashtable to track if all terms are found in the file
+            $termMatches = @{}
 
             foreach ($line in $lines) {
                 $lineNumber++
 
-                # Skip lines that start with "using" for .cs files
-                if ($skipUsingDirectives -and $line.TrimStart().StartsWith("using ")) {
+                # Skip leading "using" directives for .cs files.
+                if ($skipUsingDirectives -and $line.TrimStart().StartsWith('using ')) {
                     continue
                 }
 
-                # Once a non-"using" line is found, activate search and stop skipping
-                if ($skipUsingDirectives -and -not $line.TrimStart().StartsWith("using ")) {
+                # The first non-"using" line activates the search.
+                if ($skipUsingDirectives -and -not $line.TrimStart().StartsWith('using ')) {
                     $searchActive = $true
                     $skipUsingDirectives = $false
                 }
@@ -55,7 +81,6 @@ function search-match {
                     foreach ($searchTerm in $s) {
                         $escapedTerm = [regex]::Escape($searchTerm)
 
-                        # Handle the cross search logic
                         if ($cross) {
                             if ($line -match $escapedTerm) {
                                 if (-not $termMatches.ContainsKey($searchTerm)) {
@@ -65,9 +90,8 @@ function search-match {
                             }
                         }
                         else {
-                            # Check for the presence of '.' before the term if -calls is specified
+                            # Require a leading '.' when -calls is set.
                             if ($line -match $escapedTerm -and (-not $calls -or $line -match "\.$escapedTerm")) {
-                                # Print the file name once if not already printed
                                 if (-not $printedFileName) {
                                     if ($dir) {
                                         Write-Output "$file"
@@ -79,12 +103,10 @@ function search-match {
                                     $printedFileName = $true
                                 }
 
-                                # Prepare the formatted line output
-                                $trimmedLine = $line.TrimStart() # Remove leading whitespace
-                                $formattedLine = "$lineNumber`t`t$trimmedLine" # Add line number and a tab at the beginning
+                                $trimmedLine = $line.TrimStart()
+                                $formattedLine = "$lineNumber`t`t$trimmedLine"
                                 Write-Output $formattedLine
 
-                                # Count and check results limit
                                 $resultsCount++
                                 if (-not $uncapped -and $resultsCount -ge $maxResults) {
                                     $resultsCapReached = $true
@@ -93,12 +115,12 @@ function search-match {
                             }
                         }
 
-                        # Exit the outer loop if the results cap is reached
                         if ($resultsCapReached) { break }
                     }
                 }
             }
-            if ($termMatches.Count -eq $s.Length -and $cross) {
+
+            if ($cross -and $termMatches.Count -eq $s.Length) {
                 if ($dir) {
                     Write-Output "$file"
                 }
@@ -106,6 +128,7 @@ function search-match {
                     $fileName = [System.IO.Path]::GetFileName($file)
                     Write-Output $fileName
                 }
+
                 foreach ($searchTerm in $termMatches.Keys) {
                     foreach ($lineNum in $termMatches[$searchTerm]) {
                         $lineContent = $lines[$lineNum - 1].TrimStart()
@@ -120,7 +143,8 @@ function search-match {
                 }
             }
         }
-    } catch {
+    }
+    catch {
         Write-Error "An error occurred while searching for files: $_"
     }
 }

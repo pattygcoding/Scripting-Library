@@ -1,5 +1,20 @@
+<#
+.SYNOPSIS
+    Cleans, builds, and tests a .NET unit test project in a new window.
+
+.DESCRIPTION
+    Runs `dotnet clean`, `dotnet build`, and `dotnet test` against the configured
+    project in a separate PowerShell window. Set $projectPath to the .csproj you
+    want to test. The window stays open so the results can be read.
+
+.EXAMPLE
+    UTest
+#>
 function UTest {
-    $projectPath = "" # Insert .cssproj path here
+    [CmdletBinding()]
+    param ()
+
+    $projectPath = '' # Insert .csproj path here
 
     $script = @"
 `$host.ui.RawUI.WindowTitle = 'Unit Tests'
@@ -20,8 +35,6 @@ Write-Host "`nPress any key to exit..." -ForegroundColor Cyan
     $bytes = [System.Text.Encoding]::Unicode.GetBytes($script)
     $encodedCommand = [Convert]::ToBase64String($bytes)
 
-    Write-Host "UTest: running project in new window." -ForegroundColor Yellow
-    Start-Process powershell -ArgumentList "-NoExit", "-EncodedCommand", $encodedCommand
+    Write-Host 'UTest: running project in new window.' -ForegroundColor Yellow
+    Start-Process powershell -ArgumentList '-NoExit', '-EncodedCommand', $encodedCommand
 }
-
-function gensql-moratorium-end {

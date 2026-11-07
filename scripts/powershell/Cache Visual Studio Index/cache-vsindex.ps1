@@ -1,10 +1,29 @@
+<#
+.SYNOPSIS
+    Builds and updates an index of .cs files under a directory tree.
+
+.DESCRIPTION
+    Scans a root directory for .cs files and maintains a text index that maps
+    each file's base name to the directories that contain it. Reports which
+    entries were added, removed, or changed since the index was last written.
+
+.PARAMETER Root
+    The root directory to scan. Defaults to the current location.
+
+.PARAMETER IndexFile
+    Path to the index file to create or update. Required.
+
+.EXAMPLE
+    cache-vsindex -Root "C:\MyProject" -IndexFile "index.txt"
+#>
 function cache-vsindex {
     [CmdletBinding()]
-    param(
-        [Parameter(Position=0)]
+    param (
+        [Parameter(Position = 0)]
         [string]$Root = (Get-Location),
-        [Parameter(Position=1)]
-        [string]$IndexFile = '' # Insert your directory here
+
+        [Parameter(Position = 1)]
+        [string]$IndexFile = '' # Insert your index file path here
     )
 
     $oldMap = @{}
@@ -30,9 +49,9 @@ function cache-vsindex {
         $newMap[$k] = $newMap[$k] | Sort-Object -Unique
     }
 
-    $added   = $newMap.Keys     | Where-Object { -not $oldMap.ContainsKey($_) }
-    $removed = $oldMap.Keys     | Where-Object { -not $newMap.ContainsKey($_) }
-    $changed = $newMap.Keys     | Where-Object {
+    $added   = $newMap.Keys | Where-Object { -not $oldMap.ContainsKey($_) }
+    $removed = $oldMap.Keys | Where-Object { -not $newMap.ContainsKey($_) }
+    $changed = $newMap.Keys | Where-Object {
         $oldMap.ContainsKey($_) -and
         (Compare-Object -ReferenceObject $oldMap[$_] `
                         -DifferenceObject $newMap[$_] `

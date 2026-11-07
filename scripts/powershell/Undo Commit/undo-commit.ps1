@@ -1,16 +1,31 @@
+<#
+.SYNOPSIS
+    Undoes the last commit.
+
+.DESCRIPTION
+    Resets the branch back one commit using the requested mode and force-pushes
+    the rewrite. "hard" discards the changes, "mixed" keeps them unstaged, and
+    "soft" keeps them staged.
+
+.PARAMETER mode
+    The reset mode: "hard", "mixed", or "soft". Defaults to "hard".
+
+.EXAMPLE
+    undo-commit
+    undo-commit -mode "soft"
+#>
 function undo-commit {
-    param(
-        [string]$mode = "hard"
+    [CmdletBinding()]
+    param (
+        [ValidateSet('hard', 'mixed', 'soft')]
+        [string]$mode = 'hard'
     )
 
-    if ($mode -notin @("hard", "mixed", "soft")) {
-        Write-Host ("Invalid mode specified. Use 'hard', 'mixed', or 'soft'.") -ForegroundColor Red
-        exit 1
-    }
+    Write-Host 'undo-commit: Undoing the last commit...' -ForegroundColor Yellow
+    git reset "--$mode" HEAD~1
 
-    Write-Host("undo-commit: Undoing the last commit...") -ForegroundColor Yellow
-    git reset --$mode HEAD~1
-  	Write-Host("undo-commit: Pushing changes...") -ForegroundColor Yellow
+    Write-Host 'undo-commit: Pushing changes...' -ForegroundColor Yellow
     git push --force
-    Write-Host("undo-commit: Undo last commit complete.") -ForegroundColor Green
+
+    Write-Host 'undo-commit: Undo last commit complete.' -ForegroundColor Green
 }

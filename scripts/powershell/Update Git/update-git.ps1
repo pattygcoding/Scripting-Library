@@ -1,39 +1,43 @@
-function update-git {
-    # Example usage:
-    # update-git                       # Merges master into the current branch
-    # update-git -branch "Hello" # Merges Hello into the current branch
+<#
+.SYNOPSIS
+    Fetches and merges the latest changes into the current branch.
 
+.DESCRIPTION
+    Fetches from the remote, merges origin/<branch> into the current branch, and
+    pushes. Merges origin/master when no branch is specified.
+
+.PARAMETER branch
+    The branch to merge into the current branch. Defaults to "master".
+
+.EXAMPLE
+    update-git
+    update-git -branch "main"
+#>
+function update-git {
+    [CmdletBinding()]
     param (
         [string]$branch
     )
-    
-    Write-Host("update-git: Fetching...") -ForegroundColor Yellow
 
-    # Fetch the latest changes
+    Write-Host 'update-git: Fetching...' -ForegroundColor Yellow
     git fetch
 
-    # Determine the branch to merge based on the parameters
     if ($branch) {
         $mergeBranch = "origin/$branch"
-        $message = "Auto-merge update: Merged $branch to branch using update-git PowerShell alias (git fetch; git merge $mergeBranch; git push;)"
-        Write-Host("update-git: Merging $mergeBranch into the current branch...") -ForegroundColor Yellow
-    } else {
-        $mergeBranch = "origin/master"
-        $message = "Auto-merge update: Merged master to branch using update-git PowerShell alias (git fetch; git merge $mergeBranch; git push;)"
-        Write-Host("update-git: Merging $mergeBranch into the current branch...") -ForegroundColor Yellow
+        $source = $branch
+    }
+    else {
+        $mergeBranch = 'origin/master'
+        $source = 'master'
     }
 
-    # Merge the selected branch
+    $message = "Auto-merge update: Merged $source to branch using update-git PowerShell alias (git fetch; git merge $mergeBranch; git push;)"
+
+    Write-Host "update-git: Merging $mergeBranch into the current branch..." -ForegroundColor Yellow
     git merge $mergeBranch -m "$message"
 
-    Write-Host ("update-git: Pushing changes...") -ForegroundColor Yellow
-    # Push the changes
+    Write-Host 'update-git: Pushing changes...' -ForegroundColor Yellow
     git push
 
-    # Output completion message
-    if ($branch) {
-        Write-Host("update-git: Auto-merge complete. Your branch is now up to date with $branch.") -ForegroundColor Green
-    } else {
-        Write-Host("update-git: Auto-merge complete. Your branch is now up to date with master.") -ForegroundColor Green
-    }
+    Write-Host "update-git: Auto-merge complete. Your branch is now up to date with $source." -ForegroundColor Green
 }
