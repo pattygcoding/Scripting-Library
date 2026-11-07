@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import { renderMarkdown } from "../markdown";
 import { currentLanguage, goHome, homeUrl, intercept, languageDocs, repoLanguageUrl, searchPlaceholder, setQuery, state, visibleScripts } from "../store/session";
 import ScriptCard from "./ScriptCard.vue";
 
 // One language's page: everything its folder holds, as cards, with the folder's own
 // README available underneath.  The search box here filters just this folder.
 const group = computed(() => currentLanguage.value);
+const renderedLanguageDocs = computed<string>(() => renderMarkdown(languageDocs.value));
 
 function homeClick(event: MouseEvent): void {
     intercept(event, goHome);
@@ -61,7 +63,7 @@ function homeClick(event: MouseEvent): void {
                 <summary class="px-4 py-3 cursor-pointer text-sm font-medium text-fg-soft hover:text-accent transition">
                     Read the {{ group?.name }} folder README
                 </summary>
-                <pre class="max-h-[32rem] overflow-auto border-t border-line/5 bg-ink-850 p-4 font-mono text-[12.5px] leading-relaxed text-fg-soft whitespace-pre-wrap break-words">{{ languageDocs }}</pre>
+                <div class="doc-markdown max-h-[32rem] overflow-auto border-t border-line/5 bg-ink-850 p-4 text-[12.5px] leading-relaxed text-fg-soft" v-html="renderedLanguageDocs"></div>
             </details>
         </div>
     </main>
