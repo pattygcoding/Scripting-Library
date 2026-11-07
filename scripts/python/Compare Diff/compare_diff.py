@@ -1,48 +1,77 @@
-# WORK IN PROGRESS
+#!/usr/bin/env python3
+"""Compare two text files line by line and highlight the differences.
 
-import re
+Lines that appear only in the first file are shown in red and lines that appear
+only in the second file are shown in green. Pass --notime to ignore log
+timestamps and "(123ms)" durations during the comparison.
+"""
+
+from __future__ import annotations
+
 import argparse
+import re
+import sys
 
-def remove_timestamps(lines):
-    pattern = re.compile(r'\[\d{2}:\d{2}:\d{2}\s\w{3}\]|\(\d+ms\)')
-    return [pattern.sub('', line) for line in lines]
+RED = "\033[91m"
+GREEN = "\033[92m"
+YELLOW = "\033[93m"
+RESET = "\033[0m"
 
-def compare_diff(file1="TestFile1.txt", file2="TestFile2.txt", no_time=False):
-    with open(file1, 'r') as f1, open(file2, 'r') as f2:
-        content1 = f1.readlines()
-        content2 = f2.readlines()
+TIMESTAMP_PATTERN = re.compile(r"\[\d{2}:\d{2}:\d{2}\s\w{3}\]|\(\d+ms\)")
+
+
+def strip_timestamps(lines: list[str]) -> list[str]:
+    """Remove log timestamps and duration markers from each line."""
+    return [TIMESTAMP_PATTERN.sub("", line) for line in lines]
+
+
+def compare_diff(file1: str, file2: str, no_time: bool = False) -> int:
+    """Print the differences between two files and return an exit code."""
+    try:
+        with open(file1, encoding="utf-8") as handle1:
+            content1 = handle1.readlines()
+        with open(file2, encoding="utf-8") as handle2:
+            content2 = handle2.readlines()
+    except OSError as error:
+        print(f"{RED}Error: {error}{RESET}", file=sys.stderr)
+        return 1
 
     if no_time:
-        print("Please note that since you included the --notime flag, timestamps will not be compared or displayed.")
-        content1 = remove_timestamps(content1)
-        content2 = remove_timestamps(content2)
+        print(
+            f"{YELLOW}Please note that since you included the --notime flag, "
+            f"timestamps will not be compared or displayed.{RESET}"
+        )
+        content1 = strip_timestamps(content1)
+        content2 = strip_timestamps(content2)
 
-    differences = []
-    max_len = max(len(content1), len(content2))
+    print(f"\n{RED}RED = {file1}{RESET}")
+    print(f"{GREEN}GREEN = {file2}{RESET}\n")
 
-    for i in range(max_len):
-        line1 = content1[i] if i < len(content1) else ''
-        line2 = content2[i] if i < len(content2) else ''
-        if line1 != line2:
-            if line1:
-                differences.append(("- " + line1.strip(), "red"))
-            if line2:
-                differences.append(("+ " + line2.strip(), "green"))
+    differences = 0
+    for index in range(max(len(content1), len(content2))):
+        line1 = content1[index] if index < len(content1) else ""
+        line2 = content2[index] if index < len(content2) else ""
+        if line1 == line2:
+            continue
+        if line1:
+            print(f"{RED}- {line1.strip()}{RESET}")
+            differences += 1
+        if line2:
+            print(f"{GREEN}+ {line2.strip()}{RESET}")
+            differences += 1
 
-    print(f"\nRED = {file1}")
-    print(f"GREEN = {file2}\n")
+    return 0 if differences == 0 else 1
 
-    for diff, color in differences:
-        if color == "red":
-            print(f"\033[91m{diff}\033[0m")
-        elif color == "green":
-            print(f"\033[92m{diff}\033[0m")
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Compare two files line by line.")
+    parser.add_argument("file1", nargs="?", default="TestFile1.txt", help="The first file to compare.")
+    parser.add_argument("file2", nargs="?", default="TestFile2.txt", help="The second file to compare.")
+    parser.add_argument("--notime", action="store_true", help="Remove timestamps before comparing.")
+    args = parser.parse_args()
+
+    return compare_diff(args.file1, args.file2, args.notime)
+
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Compare two files line by line.")
-    parser.add_argument("file1", nargs='?', default="TestFile1.txt", type=str, help="The first file to compare.")
-    parser.add_argument("file2", nargs='?', default="TestFile2.txt", type=str, help="The second file to compare.")
-    parser.add_argument("--notime", action="store_true", help="Remove timestamps before comparing.")
-
-    args = parser.parse_args()
-    compare_diff(args.file1, args.file2, args.notime)
+    sys.exit(main())

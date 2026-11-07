@@ -1,15 +1,27 @@
+#!/usr/bin/env python3
+"""A minimal tkinter GUI with a label and a button."""
+
+from __future__ import annotations
+
+import sys
 import tkinter as tk
 
-def on_button_click():
-    label.config(text="Button clicked!")
 
-app = tk.Tk()
-app.title("Simple GUI")
+def main() -> int:
+    root = tk.Tk()
+    root.title("Simple GUI")
 
-label = tk.Label(app, text="Hello, Tkinter!")
-label.pack()
+    label = tk.Label(root, text="Hello, Tkinter!")
+    label.pack()
 
-button = tk.Button(app, text="Click Me", command=on_button_click)
-button.pack()
+    def on_click() -> None:
+        label.config(text="Button clicked!")
 
-app.mainloop()
+    tk.Button(root, text="Click Me", command=on_click).pack()
+
+    root.mainloop()
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

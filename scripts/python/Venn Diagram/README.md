@@ -8,13 +8,13 @@ This script creates a visual Venn diagram showing the relationship between two s
 ### Requirements
 - Install dependencies: `pip install matplotlib matplotlib-venn`
 
-### Features
-- Creates a two-set Venn diagram
-- Customizable set labels and content
-- Visual representation of set relationships
-- Shows unique and shared items
+### Arguments
+- `set_a`: Comma-separated items in the first set.
+- `set_b`: Comma-separated items in the second set.
+- `--label-a`: Label for the first set. Defaults to `Set A`.
+- `--label-b`: Label for the second set. Defaults to `Set B`.
 
 ### Example Usage
-```python
-python venn-diagram.py
+```
+python venn_diagram.py "A1,A2,Shared" "B1,B2,Shared"
 ```

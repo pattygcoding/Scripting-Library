@@ -169,28 +169,61 @@ See the [full documentation](scripts/python/README.md) for the third-party depen
 
 | Script | Description |
 | --- | --- |
+| [Angular Start](scripts/python/Angular%20Start) | Start an Angular dev server and open Chrome |
 | [Backend File Explorer](scripts/python/Backend%20File%20Explorer) | GUI file explorer that opens files in Visual Studio, VS Code, or Android Studio |
+| [Cache Visual Studio Index](scripts/python/Cache%20Visual%20Studio%20Index) | Build and update an index of .cs files |
+| [Clear Downloads](scripts/python/Clear%20Downloads) | Clear the Downloads folder |
+| [Clear Git](scripts/python/Clear%20Git) | Delete unpushed local branches |
 | [Compare Diff](scripts/python/Compare%20Diff) | Compare two files line by line and highlight the differences |
+| [Compress Git](scripts/python/Compress%20Git) | Compress multiple commits into one |
+| [Connect Four](scripts/python/Connect%20Four) | Play Connect Four in the console |
 | [Count Files](scripts/python/Count%20Files) | Count files in a directory tree |
 | [Count Words](scripts/python/Count%20Words) | Count the words in a text file |
+| [Create File](scripts/python/Create%20File) | Create a new file, defaulting to .txt |
+| [Dotnet Analysis](scripts/python/Dotnet%20Analysis) | Analyze .NET logs for database commands and endpoints |
 | [Generate QR Code](scripts/python/Generate%20QR%20Code) | Generate a QR code for a link |
+| [Gensql Col](scripts/python/Gensql%20Col) | Generate SQL to find a column by name |
+| [Gensql Count](scripts/python/Gensql%20Count) | Generate SQL to count a table's rows |
 | [Get Directory Size](scripts/python/Get%20Directory%20Size) | Return the byte size of a directory |
 | [Get Links](scripts/python/Get%20Links) | Return the links inside a URL |
 | [Get System Info](scripts/python/Get%20System%20Info) | Return the system information of the machine |
 | [Get Weather](scripts/python/Get%20Weather) | Return the weather for a city |
-| [Instant Gui](scripts/python/Instant%20Gui) | Generate an instant GUI |
+| [Goto](scripts/python/Goto) | Jump to a frequently used directory |
+| [India Time](scripts/python/India%20Time) | Convert a time to India Standard Time |
+| [Instant GUI](scripts/python/Instant%20Gui) | Generate an instant GUI |
+| [Ip](scripts/python/Ip) | Return your IP address |
 | [JSON to CSV](scripts/python/JSON%20to%20CSV) | Convert a JSON file to CSV |
 | [Merge PDFs](scripts/python/Merge%20PDFs) | Merge multiple PDFs into one |
+| [Neovim](scripts/python/Neovim) | Find a file by name and open it in Neovim |
+| [New Branch](scripts/python/New%20Branch) | Create a new Git branch from origin/master |
+| [Nginx](scripts/python/Nginx) | Start or reload a local Nginx server |
 | [Organize Directory](scripts/python/Organize%20Directory) | Organize a directory by file extension |
+| [Print](scripts/python/Print) | Print text with optional ANSI color |
 | [Print Directory Tree](scripts/python/Print%20Directory%20Tree) | Print the current directory tree |
 | [Random Password](scripts/python/Random%20Password) | Generate a random password |
+| [React Start](scripts/python/React%20Start) | Start a React dev server and open Chrome |
 | [Read Pics](scripts/python/Read%20Pics) | OCR text out of PNG images |
+| [Rebase Git](scripts/python/Rebase%20Git) | Rebase the current branch and force-with-lease push |
+| [Rebase Git All](scripts/python/Rebase%20Git%20All) | Rebase every local branch onto its upstream |
+| [Regvim](scripts/python/Regvim) | Find a file by name and open it in Vim |
+| [Reset Git](scripts/python/Reset%20Git) | Hard reset the current branch to origin/main |
 | [Resize Image](scripts/python/Resize%20Image) | Resize an image |
+| [Safe Unzip](scripts/python/Safe%20Unzip) | Safely extract a ZIP archive |
 | [Search Match](scripts/python/Search%20Match) | Search a directory tree for one or more terms |
 | [Send Email](scripts/python/Send%20Email) | Send an email |
 | [Shorten URL](scripts/python/Shorten%20URL) | Shorten a URL |
+| [Stack Trace](scripts/python/Stack%20Trace) | Extract file paths from a .NET stack trace |
+| [Start Mod](scripts/python/Start%20Mod) | Build and launch a Minecraft mod client |
+| [Svelte Start](scripts/python/Svelte%20Start) | Start a Svelte dev server and open Chrome |
+| [Time](scripts/python/Time) | Time any operation |
+| [Undo Commit](scripts/python/Undo%20Commit) | Undo the last commit and push the rewrite |
+| [Unit Tests](scripts/python/Unit%20Tests) | Clean, build, and test a .NET project |
 | [Update Git](scripts/python/Update%20Git) | Fetch and merge the latest changes |
+| [Update Git All](scripts/python/Update%20Git%20All) | Update every local branch |
 | [Venn Diagram](scripts/python/Venn%20Diagram) | Draw a Venn diagram of two sets |
+| [Vs](scripts/python/Vs) | Find a file by name and open it in Visual Studio |
+| [Vsc](scripts/python/Vsc) | Find a file by name and open it in VS Code |
+| [Vue Start](scripts/python/Vue%20Start) | Start a Vue dev server and open Chrome |
 
 ## Ruby
 

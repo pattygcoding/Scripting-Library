@@ -1,35 +1,55 @@
-import os
-import fnmatch
+#!/usr/bin/env python3
+"""Count files in the current directory tree, grouped by extension.
+
+Every file under the current directory is counted and the total is printed along
+with a breakdown per extension. Files inside node_modules are excluded unless
+--includenode is given.
+"""
+
+from __future__ import annotations
+
 import argparse
+import os
+import sys
 from collections import defaultdict
 
-def count_files(include_node):
-    current_directory = os.getcwd()
-    
-    # Get all files recursively
-    all_files = []
-    for root, dirs, files in os.walk(current_directory):
-        if not include_node and 'node_modules' in root:
-            continue
-        for file in files:
-            all_files.append(os.path.join(root, file))
+CYAN = "\033[96m"
+YELLOW = "\033[93m"
+RESET = "\033[0m"
 
-    total_files = len(all_files)
-    files_by_extension = defaultdict(int)
-    
-    for file in all_files:
-        _, ext = os.path.splitext(file)
-        files_by_extension[ext] += 1
+NODE_MODULES = "node_modules"
 
-    # Output results
-    print("\033[96mTotal number of files: \033[0m\033[93m{}\033[0m".format(total_files))
-    print("\033[96mFiles by extension:\033[0m")
-    for ext, count in sorted(files_by_extension.items()):
-        print("\033[93m{}: {}\033[0m".format(ext, count))
+
+def count_files(include_node: bool = False, directory: str | None = None) -> None:
+    """Count files under *directory* and print totals per extension."""
+    directory = directory or os.getcwd()
+
+    files_by_extension: defaultdict[str, int] = defaultdict(int)
+    total_files = 0
+
+    for root, dirs, files in os.walk(directory):
+        if not include_node and NODE_MODULES in dirs:
+            dirs.remove(NODE_MODULES)
+        for name in files:
+            total_files += 1
+            files_by_extension[os.path.splitext(name)[1]] += 1
+
+    print(f"{CYAN}Total number of files: {RESET}{YELLOW}{total_files}{RESET}")
+    print(f"{CYAN}Files by extension:{RESET}")
+    for extension, count in sorted(files_by_extension.items()):
+        print(f"{YELLOW}{extension}: {count}{RESET}")
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        description="Count files in the current directory, optionally including node_modules."
+    )
+    parser.add_argument("--includenode", action="store_true", help="Include files in node_modules directories.")
+    args = parser.parse_args()
+
+    count_files(args.includenode)
+    return 0
+
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Count files in the current directory, optionally excluding node_modules.')
-    parser.add_argument('--includenode', action='store_true', help='Include files in node_modules directory')
-    args = parser.parse_args()
-    
-    count_files(args.includenode)
+    sys.exit(main())
